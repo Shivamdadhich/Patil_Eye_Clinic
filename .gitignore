@@ -5,3 +5,5 @@ __pycache__/
 .system_generated/
 .agents/
 *.log
+
+.vercel
