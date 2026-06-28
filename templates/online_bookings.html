@@ -27,27 +27,6 @@
           padding: 35px;
           box-shadow: 0 10px 30px -10px rgba(4, 120, 87, 0.08);
       }
-      .btn-pay {
-          font-size: 0.8rem;
-          font-weight: 600;
-          border-radius: 8px !important;
-          padding: 6px 14px;
-          border: 1.5px solid rgba(16, 185, 129, 0.25);
-          color: #064e3b;
-          background-color: transparent;
-          transition: all 0.2s ease;
-          cursor: pointer;
-      }
-      .btn-pay:hover {
-          background: rgba(16, 185, 129, 0.1);
-          color: #047857;
-      }
-      .btn-check:checked + .btn-pay {
-          background-color: #10b981 !important;
-          border-color: #10b981 !important;
-          color: #ffffff !important;
-          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
-      }
       .btn-action {
           border-radius: 8px;
           padding: 8px 16px;
@@ -72,6 +51,29 @@
           border-radius: 12px;
           font-weight: 600;
           font-size: 0.8rem;
+      }
+      
+      /* Professional Styled Dropdown Select */
+      .glass-select {
+          border: 1.5px solid rgba(16, 185, 129, 0.25);
+          border-radius: 10px;
+          padding: 8px 32px 8px 16px;
+          background: #ffffff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23047857' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") no-repeat right 12px center/12px 12px;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          color: #064e3b;
+          font-weight: 600;
+          font-size: 0.9rem;
+          transition: all 0.2s ease;
+          min-width: 120px;
+          cursor: pointer;
+      }
+      .glass-select:focus {
+          border-color: #10b981;
+          background-color: #ffffff;
+          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+          outline: none;
       }
   </style>
 </head>
@@ -125,16 +127,11 @@
                 <form method="POST" action="/receptionist/online-bookings/collect">
                   <input type="hidden" name="appointment_id" value="{{ booking.appointment_id }}">
                   <td>
-                    <div class="btn-group" role="group">
-                      <input type="radio" class="btn-check" name="payment_method" id="pay_cash_{{ booking.appointment_id }}" value="Cash" checked>
-                      <label class="btn btn-pay" for="pay_cash_{{ booking.appointment_id }}">Cash</label>
-
-                      <input type="radio" class="btn-check" name="payment_method" id="pay_upi_{{ booking.appointment_id }}" value="UPI">
-                      <label class="btn btn-pay" for="pay_upi_{{ booking.appointment_id }}">UPI</label>
-
-                      <input type="radio" class="btn-check" name="payment_method" id="pay_card_{{ booking.appointment_id }}" value="Card">
-                      <label class="btn btn-pay" for="pay_card_{{ booking.appointment_id }}">Card</label>
-                    </div>
+                    <select name="payment_method" class="glass-select" required>
+                      <option value="Cash" selected>Cash</option>
+                      <option value="UPI">UPI</option>
+                      <option value="Card">Card</option>
+                    </select>
                   </td>
                   <td>
                     <button type="submit" class="btn btn-action btn-success">
