@@ -129,7 +129,11 @@
             
             <button type="submit" class="btn btn-action btn-success w-100 mb-3">Register and Continue ➔</button>
             <div class="text-center">
-              <a href="{{ url_for('receptionist_dashboard') }}" class="back-link">← Cancel and Go Back</a>
+              {% if session.get('receptionist_logged_in') %}
+                <a href="{{ url_for('receptionist_dashboard') }}" class="back-link">← Cancel and Go Back</a>
+              {% else %}
+                <a href="/" class="back-link">← Cancel and Go Back</a>
+              {% endif %}
             </div>
           </form>
         </div>

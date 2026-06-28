@@ -167,7 +167,11 @@
                     </a>
                 </div>
                 <div class="text-center mt-3 no-print">
-                    <a href="{{ url_for('receptionist_dashboard') }}" class="back-link">← Return to Dashboard</a>
+                    {% if session.get('receptionist_logged_in') %}
+                      <a href="{{ url_for('receptionist_dashboard') }}" class="back-link">← Return to Dashboard</a>
+                    {% else %}
+                      <a href="/" class="back-link">← Go Back Home</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
