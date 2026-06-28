@@ -11,7 +11,7 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #f0fdf4 !important;
+            background: #ffffff !important;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -22,7 +22,7 @@
         }
 
         .hero-viewport {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15)), url("{{ url_for('static', filename='clinic_entry.jpeg') }}") !important;
+            background-image: url("{{ url_for('static', filename='clinic_entry.jpeg') }}") !important;
             background-size: cover !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
@@ -89,9 +89,7 @@
         }
 
         .hero-title span {
-            background: linear-gradient(90deg, #059669, #047857) !important;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #059669 !important;
         }
 
         .hero-subtitle {
