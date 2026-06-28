@@ -550,8 +550,10 @@ def patient_book_details():
         aadhaar = normalize_aadhaar(request.form.get("aadhaar"))
         department = request.form.get("department", "Ophthalmology")
         doctor = request.form.get("doctor")
-        time_slot = request.form.get("time_slot", "Not Specified")
-        
+        time_slot = request.form.get("time_slot")
+        if not time_slot or time_slot.strip() == "" or time_slot == "Not Specified":
+            flash("Please select a time slot before booking your appointment.", "danger")
+            return redirect(url_for("patient_book_details", aadhaar=aadhaar))
         raw_date = request.form.get("date")
         appointment_date = None
         if raw_date:

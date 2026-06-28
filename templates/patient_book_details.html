@@ -169,6 +169,16 @@
       }
     }
 
+    function validateForm(event) {
+      const slot = document.getElementById('selected_time_slot').value;
+      if (!slot) {
+        event.preventDefault();
+        alert("Please select a time slot before booking the appointment.");
+        return false;
+      }
+      return true;
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
       // Bind check event listeners
       document.getElementById('doctor').addEventListener('change', checkSlotAvailability);
@@ -188,7 +198,17 @@
             <span class="info-badge">Patient Aadhaar: {{ aadhaar }}</span>
           </div>
 
-          <form method="POST" action="/book-appointment/details">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} text-center py-2" role="alert" style="border-radius: 12px; font-size: 0.9rem;">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
+          <form method="POST" action="/book-appointment/details" onsubmit="return validateForm(event)">
             <input type="hidden" name="aadhaar" value="{{ aadhaar }}">
             <input type="hidden" name="department" value="Ophthalmology">
             <input type="hidden" name="amount" value="400.00">
