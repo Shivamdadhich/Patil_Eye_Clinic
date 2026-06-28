@@ -11,7 +11,8 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f6fffa 100%) !important;
+            background: linear-gradient(rgba(240, 253, 244, 0.88), rgba(236, 253, 245, 0.93)), url('/static/clinic_entry.jpeg') no-repeat center center fixed !important;
+            background-size: cover !important;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -179,13 +180,38 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);
             transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
         }
 
-        .btn-action:hover {
+        .btn-primary.btn-action {
+            background: rgba(13, 110, 253, 0.15) !important;
+            border: 1.5px solid rgba(13, 110, 253, 0.4) !important;
+            color: #0b5ed7 !important;
+            box-shadow: 0 4px 14px rgba(13, 110, 253, 0.15) !important;
+        }
+
+        .btn-primary.btn-action:hover {
+            background: rgba(13, 110, 253, 0.3) !important;
+            border-color: rgba(13, 110, 253, 0.6) !important;
+            color: #024db5 !important;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3) !important;
+        }
+
+        .btn-success.btn-action {
+            background: rgba(16, 185, 129, 0.15) !important;
+            border: 1.5px solid rgba(16, 185, 129, 0.4) !important;
+            color: #047857 !important;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15) !important;
+        }
+
+        .btn-success.btn-action:hover {
+            background: rgba(16, 185, 129, 0.3) !important;
+            border-color: rgba(16, 185, 129, 0.6) !important;
+            color: #064e3b !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3) !important;
         }
 
         .footer {
@@ -239,7 +265,7 @@
             <div class="hero-badge">
                 <span>✦</span> Healthcare Redefined & Simplified
             </div>
-            <h1 class="hero-title">Your Health, Secured in <span>Real-Time</span></h1>
+            <h1 class="hero-title" style="text-shadow: 0 2px 10px rgba(6, 78, 59, 0.05);">Welcome to <span>Patil Eye Care</span></h1>
             <p class="hero-subtitle">Access doctor schedules, patient reports, and manage appointment details instantly with Patil Eye Care's modern clinic ecosystem.</p>
         </div>
 
