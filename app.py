@@ -271,6 +271,122 @@ def make_appointment():
                            min_date=min_date, 
                            doctors_by_dept=doctors_by_dept)
 
+# -------------------- Public Patient Booking Flow --------------------
+@app.route("/book-appointment", methods=["GET", "POST"])
+def patient_book_aadhaar():
+    if request.method == "POST":
+        aadhaar = normalize_aadhaar(request.form.get("aadhaar"))
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT * FROM patients WHERE aadhaar = %s", (aadhaar,))
+        patient = cursor.fetchone()
+        cursor.close()
+
+        if patient:
+            return redirect(url_for("patient_book_details", aadhaar=aadhaar))
+        else:
+            return redirect(url_for("patient_book_register", aadhaar=aadhaar))
+
+    return render_template("patient_book_aadhaar.html")
+
+@app.route("/book-appointment/register", methods=["GET", "POST"])
+def patient_book_register():
+    if request.method == "POST":
+        name = request.form.get("name")
+        birth_date = request.form.get("birth_date")
+        gender = request.form.get("gender")
+        phone = request.form.get("phone")
+        address = request.form.get("address")
+        aadhaar = normalize_aadhaar(request.form.get("aadhaar"))
+
+        age = None
+        if birth_date:
+            birth_date_obj = datetime.strptime(birth_date, '%Y-%m-%d')
+            age = (datetime.today() - birth_date_obj).days // 365
+
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT name FROM patients WHERE aadhaar = %s", (aadhaar,))
+        existing_patient = cursor.fetchone()
+        cursor.close()
+
+        if existing_patient:
+            return redirect(url_for("patient_book_details", aadhaar=aadhaar))
+
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            INSERT INTO patients (aadhaar, name, age, gender, contact, address)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (aadhaar, name, age, gender, phone, address))
+        mysql.connection.commit()
+        cursor.close()
+
+        return redirect(url_for("patient_book_details", aadhaar=aadhaar))
+
+    aadhaar = normalize_aadhaar(request.args.get("aadhaar"))
+    return render_template("patient_book_register.html", aadhaar=aadhaar, get_today=get_ist_now().date().isoformat())
+
+@app.route("/book-appointment/details", methods=["GET", "POST"])
+def patient_book_details():
+    if request.method == "POST":
+        aadhaar = normalize_aadhaar(request.form.get("aadhaar"))
+        department = request.form.get("department")
+        doctor = request.form.get("doctor")
+        
+        raw_date = request.form.get("date")
+        appointment_date = None
+        if raw_date:
+            for fmt in ('%Y-%m-%d', '%d-%m-%Y', '%Y/%m/%d', '%d/%m/%Y'):
+                try:
+                    appointment_date = datetime.strptime(raw_date, fmt).date().isoformat()
+                    break
+                except ValueError:
+                    continue
+        if not appointment_date:
+            appointment_date = get_ist_now().date().isoformat()
+
+        amount_val = 500.00
+        payment_method = "Cash"
+
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT name, age, gender FROM patients WHERE aadhaar = %s", (aadhaar,))
+        patient = cursor.fetchone()
+
+        if not patient:
+            return f"Error: No patient found with Aadhaar {aadhaar}"
+
+        cursor.execute("""
+            INSERT INTO appointments (aadhaar, department, doctor, appointment_date, amount, payment_method)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (aadhaar, department, doctor, appointment_date, amount_val, payment_method))
+        mysql.connection.commit()
+        cursor.close()
+
+        return render_template("patient_book_confirmation.html",
+                               uhid=aadhaar,
+                               name=patient["name"],
+                               department=department,
+                               doctor=doctor,
+                               appointment_date=appointment_date)
+
+    aadhaar = normalize_aadhaar(request.args.get("aadhaar"))
+    min_date = get_ist_now().date().isoformat()
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT name, specialization FROM doctors")
+    doctors = cursor.fetchall()
+    cursor.close()
+
+    doctors_by_dept = {}
+    for doc in doctors:
+        dept = doc["specialization"]
+        if dept not in doctors_by_dept:
+            doctors_by_dept[dept] = []
+        doctors_by_dept[dept].append(doc["name"])
+
+    return render_template("patient_book_details.html", 
+                           aadhaar=aadhaar, 
+                           min_date=min_date, 
+                           doctors_by_dept=doctors_by_dept)
+
 # -------------------- Appointment PDF --------------------
 @app.route("/receptionist/appointment/pdf/<aadhaar>")
 def generate_pdf(aadhaar):
