@@ -123,6 +123,69 @@ def receptionist_login():
 
     return render_template("receptionist_login.html")
 
+# -------------------- Password Reset via Firebase OTP --------------------
+@app.route("/forgot-password", methods=["GET"])
+def forgot_password():
+    return render_template("forgot_password.html",
+                           firebase_api_key=os.getenv("FIREBASE_API_KEY", ""),
+                           firebase_auth_domain=os.getenv("FIREBASE_AUTH_DOMAIN", ""),
+                           firebase_project_id=os.getenv("FIREBASE_PROJECT_ID", ""),
+                           firebase_storage_bucket=os.getenv("FIREBASE_STORAGE_BUCKET", ""),
+                           firebase_messaging_sender_id=os.getenv("FIREBASE_MESSAGING_SENDER_ID", ""),
+                           firebase_app_id=os.getenv("FIREBASE_APP_ID", ""))
+
+@app.route("/api/verify-staff", methods=["POST"])
+def api_verify_staff():
+    data = request.get_json() or {}
+    role = data.get("role")
+    username = data.get("username")
+    contact = data.get("contact")
+
+    if role not in ["receptionists", "doctors", "lab_staff"]:
+        return jsonify({"success": False, "message": "Invalid account role selected."})
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    query = f"SELECT * FROM {role} WHERE username = %s AND contact = %s"
+    cursor.execute(query, (username, contact))
+    staff = cursor.fetchone()
+    cursor.close()
+
+    if staff:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "message": "No matching account found with registered username & mobile number."})
+
+@app.route("/forgot-password/reset", methods=["POST"])
+def forgot_password_reset_page():
+    role = request.form.get("role")
+    username = request.form.get("username")
+    contact = request.form.get("contact")
+    return render_template("reset_password.html", role=role, username=username, contact=contact)
+
+@app.route("/forgot-password/complete", methods=["POST"])
+def forgot_password_complete():
+    role = request.form.get("role")
+    username = request.form.get("username")
+    contact = request.form.get("contact")
+    password = request.form.get("password")
+
+    if role not in ["receptionists", "doctors", "lab_staff"]:
+        return "Invalid account role"
+
+    # Backend complexity validation
+    if len(password) < 8 or not any(c.isupper() for c in password) or not any(c.islower() for c in password) or not any(c.isdigit() for c in password) or not any(not c.isalnum() for c in password):
+        flash("Password does not meet the complexity requirements.", "danger")
+        return render_template("reset_password.html", role=role, username=username, contact=contact)
+
+    cursor = mysql.connection.cursor()
+    query = f"UPDATE {role} SET password = %s WHERE username = %s AND contact = %s"
+    cursor.execute(query, (password, username, contact))
+    mysql.connection.commit()
+    cursor.close()
+
+    flash("Password reset successfully. You can now login with your new password.", "success")
+    return redirect(url_for("receptionist_login"))
+
 @app.route("/receptionist/dashboard")
 def receptionist_dashboard():
     if not session.get("receptionist_logged_in"):

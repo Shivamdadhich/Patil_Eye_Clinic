@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS receptionists (
     receptionist_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
-    name VARCHAR(100) NOT NULL
+    name VARCHAR(100) NOT NULL,
+    contact VARCHAR(20) DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS doctors (
@@ -22,14 +23,16 @@ CREATE TABLE IF NOT EXISTS doctors (
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     name VARCHAR(100) NOT NULL,
-    specialization VARCHAR(100) NOT NULL
+    specialization VARCHAR(100) NOT NULL,
+    contact VARCHAR(20) DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS lab_staff (
     lab_staff_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
-    name VARCHAR(100) NOT NULL
+    name VARCHAR(100) NOT NULL,
+    contact VARCHAR(20) DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS appointments (
