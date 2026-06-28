@@ -106,8 +106,10 @@ class MySQLWrapper:
         database = os.getenv("DB_NAME", "careconnect")
         port = int(os.getenv("DB_PORT", 3306))
         
-        # Setup SSL if specified (recommended/required for cloud DBs)
+        # Setup SSL if specified or if connecting to a remote cloud DB
         ssl_mode = os.getenv("DB_SSL_MODE", "False").lower() in ("true", "1", "yes")
+        if host not in ("localhost", "127.0.0.1") and host:
+            ssl_mode = True
         ssl_config = {"min_version": "TLSv1.2"} if ssl_mode else None
 
         return pymysql.connect(
