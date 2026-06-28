@@ -139,21 +139,22 @@ def api_verify_staff():
     data = request.get_json() or {}
     role = data.get("role")
     username = data.get("username")
-    contact = data.get("contact")
 
     if role not in ["receptionists", "doctors", "lab_staff"]:
         return jsonify({"success": False, "message": "Invalid account role selected."})
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    query = f"SELECT * FROM {role} WHERE username = %s AND contact = %s"
-    cursor.execute(query, (username, contact))
+    query = f"SELECT contact FROM {role} WHERE username = %s"
+    cursor.execute(query, (username,))
     staff = cursor.fetchone()
     cursor.close()
 
-    if staff:
-        return jsonify({"success": True})
+    if staff and staff.get("contact"):
+        contact_val = staff["contact"]
+        masked_contact = "xxxxxx" + contact_val[-4:] if len(contact_val) >= 4 else contact_val
+        return jsonify({"success": True, "contact": contact_val, "masked_contact": masked_contact})
     else:
-        return jsonify({"success": False, "message": "No matching account found with registered username & mobile number."})
+        return jsonify({"success": False, "message": "No matching account found with registered username."})
 
 @app.route("/forgot-password/reset", methods=["POST"])
 def forgot_password_reset_page():
