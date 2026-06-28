@@ -134,6 +134,67 @@ def receptionist_logout():
     session.clear()
     return redirect(url_for("receptionist_login"))
 
+# -------------------- Receptionist Online Bookings List & Payment Collection --------------------
+@app.route("/receptionist/online-bookings", methods=["GET"])
+def receptionist_online_bookings():
+    if not session.get("receptionist_logged_in"):
+        return redirect(url_for("receptionist_login"))
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+        SELECT a.*, p.name as patient_name FROM appointments a 
+        JOIN patients p ON a.aadhaar = p.aadhaar 
+        WHERE a.payment_status = 'Pending' 
+        ORDER BY a.appointment_date DESC
+    """)
+    bookings = cursor.fetchall()
+    cursor.close()
+    return render_template("online_bookings.html", bookings=bookings)
+
+@app.route("/receptionist/online-bookings/collect", methods=["POST"])
+def receptionist_online_bookings_collect():
+    if not session.get("receptionist_logged_in"):
+        return redirect(url_for("receptionist_login"))
+    appointment_id = request.form.get("appointment_id")
+    payment_method = request.form.get("payment_method", "Cash")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # Update payment status
+    cursor.execute("""
+        UPDATE appointments 
+        SET payment_status = 'Paid', payment_method = %s 
+        WHERE appointment_id = %s
+    """, (payment_method, appointment_id))
+    mysql.connection.commit()
+
+    # Get appointment & patient details for receipt
+    cursor.execute("""
+        SELECT a.*, p.name, p.age, p.gender FROM appointments a 
+        JOIN patients p ON a.aadhaar = p.aadhaar 
+        WHERE a.appointment_id = %s
+    """, (appointment_id,))
+    appt = cursor.fetchone()
+    cursor.close()
+
+    if not appt:
+        return "Error: Appointment not found"
+
+    try:
+        appt_date_obj = datetime.strptime(str(appt["appointment_date"]), '%Y-%m-%d')
+    except Exception:
+        appt_date_obj = get_ist_now()
+
+    flash(f"Payment collected successfully for {appt['name']}.")
+    return render_template("appointment_confirmation.html",
+                           uhid=appt["aadhaar"],
+                           name=appt["name"],
+                           age=appt["age"],
+                           gender=appt["gender"],
+                           department=appt["department"],
+                           doctor=appt["doctor"],
+                           appointment_date=str(appt["appointment_date"]),
+                           valid_upto=(appt_date_obj + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S'),
+                           amount=f"{float(appt['amount']):,.2f}")
+
 # -------------------- Search Patient --------------------
 @app.route("/receptionist/search", methods=["GET", "POST"])
 def search_patient():
@@ -227,8 +288,8 @@ def make_appointment():
             return f"Error: No patient found with Aadhaar {aadhaar}"
 
         cursor.execute("""
-            INSERT INTO appointments (aadhaar, department, doctor, appointment_date, amount, payment_method)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO appointments (aadhaar, department, doctor, appointment_date, amount, payment_method, time_slot, payment_status)
+            VALUES (%s, %s, %s, %s, %s, %s, 'Walk-In', 'Paid')
         """, (aadhaar, department, doctor, appointment_date, amount_val, payment_method))
         mysql.connection.commit()
         cursor.close()

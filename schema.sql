@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS appointments (
     amount DECIMAL(10, 2) NOT NULL DEFAULT 500.00,
     payment_method VARCHAR(50) NOT NULL DEFAULT 'Cash',
     time_slot VARCHAR(100) DEFAULT NULL,
+    payment_status VARCHAR(20) NOT NULL DEFAULT 'Paid',
     FOREIGN KEY (aadhaar) REFERENCES patients(aadhaar) ON DELETE CASCADE
 );
 

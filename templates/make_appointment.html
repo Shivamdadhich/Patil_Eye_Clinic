@@ -85,36 +85,6 @@
           color: #059669;
       }
   </style>
-  <script>
-    // Dynamic doctors from database grouped by department
-    const doctorsByDept = {{ doctors_by_dept | tojson }};
-
-    function updateDoctors() {
-      const deptSelect = document.getElementById("department");
-      const doctorSelect = document.getElementById("doctor");
-      const selectedDept = deptSelect.value;
-
-      // Clear current doctor options
-      doctorSelect.innerHTML = "";
-
-      // Add default choose option
-      const defaultOpt = document.createElement("option");
-      defaultOpt.disabled = true;
-      defaultOpt.selected = true;
-      defaultOpt.textContent = "Select a doctor";
-      doctorSelect.appendChild(defaultOpt);
-
-      // Populate new doctor list
-      if (doctorsByDept[selectedDept]) {
-        doctorsByDept[selectedDept].forEach(doc => {
-          const option = document.createElement("option");
-          option.value = doc;
-          option.textContent = doc;
-          doctorSelect.appendChild(option);
-        });
-      }
-    }
-  </script>
 </head>
 <body>
   <div class="container">
@@ -127,29 +97,33 @@
           <h3 class="text-center mb-4 fw-bold text-dark">Book Appointment</h3>
           <form method="POST" action="/receptionist/appointment">
             <input type="hidden" name="aadhaar" value="{{ aadhaar }}">
+            <input type="hidden" name="department" value="Ophthalmology">
 
+            <!-- Locked Department -->
             <div class="mb-3">
-              <label class="form-label">Select Department</label>
-              <select class="form-select glass-select" name="department" id="department" onchange="updateDoctors()" required>
-                <option disabled selected value="">Select a department</option>
-                {% for dept in doctors_by_dept.keys() %}
-                  <option>{{ dept }}</option>
-                {% endfor %}
+              <label class="form-label">Department</label>
+              <select class="form-select glass-select" disabled style="background-color: #e5e7eb !important; color: #4b5563 !important; cursor: not-allowed;">
+                <option selected>Ophthalmology</option>
               </select>
             </div>
 
+            <!-- Doctor Dropdown Selection -->
             <div class="mb-3">
               <label class="form-label">Select Doctor</label>
               <select class="form-select glass-select" name="doctor" id="doctor" required>
-                <option disabled selected>Select a doctor</option>
+                <option disabled selected value="">Select a doctor</option>
+                <option value="Dr. Prajakta Chachre">Dr. Prajakta Chachre</option>
+                <option value="Dr. XYZ">Dr. XYZ</option>
               </select>
             </div>
 
+            <!-- Date Selection -->
             <div class="mb-3">
               <label class="form-label">Preferred Date</label>
               <input type="date" name="date" class="form-control glass-input" required min="{{ min_date }}">
             </div>
 
+            <!-- Fee & Payment Mode -->
             <div class="row g-2 mb-4">
               <div class="col-6">
                 <label class="form-label">Consultation Fee (₹)</label>

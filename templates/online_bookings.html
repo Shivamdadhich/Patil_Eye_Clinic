@@ -1,0 +1,143 @@
+<!-- templates/online_bookings.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Bookings | Patil Eye Clinic</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  {% include 'theme_style.html' %}
+  <style>
+      body {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f6fffa 100%) !important;
+          min-height: 100vh;
+          padding: 40px 0;
+      }
+      h2, h3 {
+          font-family: 'Outfit', sans-serif;
+          color: #064e3b;
+      }
+      .bookings-card {
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(16, 185, 129, 0.15);
+          border-radius: 24px;
+          padding: 35px;
+          box-shadow: 0 10px 30px -10px rgba(4, 120, 87, 0.08);
+      }
+      .glass-select {
+          border: 1.5px solid rgba(16, 185, 129, 0.2);
+          border-radius: 8px;
+          padding: 6px 12px;
+          background: rgba(255, 255, 255, 0.8);
+          color: #064e3b;
+          font-weight: 500;
+          font-size: 0.9rem;
+      }
+      .btn-action {
+          border-radius: 8px;
+          padding: 8px 16px;
+          font-weight: 600;
+          font-size: 0.9rem;
+          transition: all 0.2s ease;
+      }
+      .back-link {
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: #10b981;
+          text-decoration: none;
+      }
+      .back-link:hover {
+          color: #059669;
+      }
+      .badge-pending {
+          background: #fef3c7;
+          color: #d97706;
+          border: 1px solid #fde68a;
+          padding: 4px 10px;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 0.8rem;
+      }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="mb-4">
+      <a href="{{ url_for('search_patient') }}" class="back-link">← Back to Patient Search</a>
+    </div>
+
+    <div class="bookings-card shadow-sm">
+      <h2 class="fw-bold mb-2">Pending Online Bookings</h2>
+      <p class="text-muted mb-4">Displaying all online patient bookings awaiting registration fee collection.</p>
+      
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="border-radius: 12px;">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Patient Name</th>
+              <th>Aadhaar Card</th>
+              <th>Doctor</th>
+              <th>Date & Slot</th>
+              <th>Amount</th>
+              <th>Payment Status</th>
+              <th>Select Method</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for booking in bookings %}
+              <tr>
+                <td><strong>{{ booking.patient_name }}</strong></td>
+                <td><code style="color: #047857;">{{ booking.aadhaar }}</code></td>
+                <td>{{ booking.doctor }}</td>
+                <td>
+                  <span class="d-block fw-semibold">{{ booking.appointment_date }}</span>
+                  <small class="text-muted">{{ booking.time_slot }}</small>
+                </td>
+                <td>₹{{ booking.amount }}</td>
+                <td><span class="badge-pending">Pending</span></td>
+                <form method="POST" action="/receptionist/online-bookings/collect">
+                  <input type="hidden" name="appointment_id" value="{{ booking.appointment_id }}">
+                  <td>
+                    <select name="payment_method" class="form-select glass-select" required>
+                      <option value="Cash" selected>Cash</option>
+                      <option value="UPI">UPI</option>
+                      <option value="Card">Card</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button type="submit" class="btn btn-action btn-success">
+                      Collect Fee & Print
+                    </button>
+                  </td>
+                </form>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="8" class="text-center text-muted py-5">
+                  No pending online bookings found.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

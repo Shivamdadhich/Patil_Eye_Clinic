@@ -16,6 +16,7 @@
           display: flex;
           align-items: center;
           justify-content: center;
+          position: relative;
       }
       h3 {
           font-family: 'Outfit', sans-serif;
@@ -74,6 +75,13 @@
   </style>
 </head>
 <body>
+  {% if session.get('receptionist_logged_in') %}
+    <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
+      <a href="/receptionist/online-bookings" class="btn btn-primary shadow-sm" style="border-radius: 12px; font-weight: 600; padding: 10px 20px; background-color: #10b981; border-color: #10b981; color: #ffffff; text-decoration: none;">
+         Online Bookings
+      </a>
+    </div>
+  {% endif %}
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-6 col-lg-5">
