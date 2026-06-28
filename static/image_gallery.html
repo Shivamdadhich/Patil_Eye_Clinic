@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patil Eye Clinic - Client Image Gallery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8fafc;
+            padding: 40px 0;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .gallery-card {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+        .gallery-card:hover {
+            transform: translateY(-4px);
+        }
+        .gallery-img {
+            height: 240px;
+            object-fit: cover;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <h2 class="fw-bold mb-2 text-dark">Client Image Assets Gallery</h2>
+        <p class="text-muted mb-5">Open this gallery to view all 19 images from your IMGS.zip file. You can choose which image to place on the homepage or other pages.</p>
+        
+        <div class="row g-4">
+            <!-- 19 images loop -->
+            <script>
+                for (let i = 1; i <= 19; i++) {
+                    document.write(`
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card gallery-card">
+                                <img src="/static/client_images/client_img_${i}.jpeg" class="card-img-top gallery-img" alt="Client Image ${i}">
+                                <div class="card-body bg-white text-center py-3">
+                                    <h6 class="fw-bold text-dark mb-0">client_img_${i}.jpeg</h6>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>
