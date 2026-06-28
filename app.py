@@ -193,7 +193,8 @@ def receptionist_online_bookings_collect():
                            doctor=appt["doctor"],
                            appointment_date=str(appt["appointment_date"]),
                            valid_upto=(appt_date_obj + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S'),
-                           amount=f"{float(appt['amount']):,.2f}")
+                           amount=f"{float(appt['amount']):,.2f}",
+                           is_payment_collection=True)
 
 # -------------------- Search Patient --------------------
 @app.route("/receptionist/search", methods=["GET", "POST"])

@@ -109,8 +109,13 @@
         <div class="col-md-8 col-lg-7 d-flex justify-content-center">
             <div class="conf-card">
                 <div class="text-center">
-                    <span class="success-badge">✔ Booking Confirmed</span>
-                    <h3 class="fw-bold text-dark mb-4">Patil Eye Clinic Appointment Confirmation</h3>
+                    {% if is_payment_collection %}
+                        <span class="success-badge" style="background: rgba(16, 185, 129, 0.1); color: #047857;">✔ Payment Collected</span>
+                        <h3 class="fw-bold text-dark mb-4">Patil Eye Clinic Payment Receipt</h3>
+                    {% else %}
+                        <span class="success-badge">✔ Booking Confirmed</span>
+                        <h3 class="fw-bold text-dark mb-4">Patil Eye Clinic Appointment Confirmation</h3>
+                    {% endif %}
                 </div>
                 
                 <div class="row">
@@ -152,7 +157,7 @@
                     </div>
                     <div class="col-sm-4">
                         <div class="data-label">Registration Fee</div>
-                        <div class="data-value text-success">₹ {{ amount }} (Free)</div>
+                        <div class="data-value text-success">₹ {{ amount }}</div>
                     </div>
                 </div>
                 
