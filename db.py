@@ -54,8 +54,8 @@ class SimpleConnectionPool:
                     conn = self.creator()
                     self.active_conns += 1
                     return conn
-                except Exception:
-                    pass
+                except Exception as e:
+                    raise e
         
         # If we reached max cached and pool is empty, block/wait for one
         try:
