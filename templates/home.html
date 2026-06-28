@@ -46,8 +46,9 @@
         }
 
         .navbar-brand {
-            font-size: 1.5rem;
+            font-size: 2.1rem;
             letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         /* Hero Banner Section */
@@ -267,6 +268,7 @@
         @media (max-width: 768px) {
             .hero-title { font-size: 2.5rem; }
             .hero-section { padding: 50px 0 30px 0; min-height: auto; }
+            .navbar-brand { font-size: 1.6rem; }
         }
 
         /* Glassmorphic Light Sidebar */
@@ -396,7 +398,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark glass-nav shadow-sm py-3">
             <div class="container px-4">
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
-                    <span style="color: #34d399; margin-right: 8px; font-size: 1.4rem;">✚</span> Patil Eye Care
+                    <img src="{{ url_for('static', filename='clinic_logo.png') }}" alt="Patil Eye Care Logo" style="height: 48px; width: auto; margin-right: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));"> Patil Eye Care
                 </a>
                 <div class="ms-auto">
                     <button class="btn btn-link p-0 border-0 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
