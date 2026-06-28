@@ -272,11 +272,11 @@ def make_appointment():
             appointment_date = get_ist_now().date().isoformat()
 
         # Robust amount parsing
-        amount = request.form.get("amount", "500.00")
+        amount = request.form.get("amount", "400.00")
         try:
             amount_val = float(amount)
         except (TypeError, ValueError):
-            amount_val = 500.00
+            amount_val = 400.00
 
         payment_method = request.form.get("payment_method", "Cash")
 
@@ -432,7 +432,7 @@ def patient_book_details():
         if not appointment_date:
             appointment_date = get_ist_now().date().isoformat()
 
-        amount_val = 500.00
+        amount_val = 400.00
         payment_method = "Cash"
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
