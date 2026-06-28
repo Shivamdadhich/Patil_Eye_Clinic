@@ -108,9 +108,24 @@
           color: #ffffff !important;
           box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
       }
+      
+      /* Disabled Booked Slot Styling */
+      .btn-slot:disabled, .btn-slot[disabled] {
+          background: #f3f4f6 !important;
+          border-color: #e5e7eb !important;
+          color: #9ca3af !important;
+          cursor: not-allowed !important;
+          text-decoration: line-through;
+          box-shadow: none !important;
+          opacity: 0.65;
+      }
   </style>
   <script>
     function selectSlot(btn, timeString) {
+      if (btn.disabled) {
+        alert("This slot is already booked and not available!");
+        return;
+      }
       // Remove active class from all slots
       document.querySelectorAll('.btn-slot').forEach(function(el) {
         el.classList.remove('active');
@@ -120,6 +135,45 @@
       // Set value in hidden input
       document.getElementById('selected_time_slot').value = timeString;
     }
+
+    async function checkSlotAvailability() {
+      const doctor = document.getElementById('doctor').value;
+      const date = document.getElementById('date').value;
+      const slotInput = document.getElementById('selected_time_slot');
+      
+      // If either doctor or date is not selected, do nothing
+      if (!doctor || !date) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/check-slots?doctor=${encodeURIComponent(doctor)}&date=${encodeURIComponent(date)}`);
+        const bookedSlots = await response.json();
+
+        // Loop through all slot buttons and disable booked ones
+        document.querySelectorAll('.btn-slot').forEach(function(btn) {
+          const slotVal = btn.getAttribute('data-slot-value');
+          if (bookedSlots.includes(slotVal)) {
+            btn.disabled = true;
+            btn.classList.remove('active');
+            // If the currently selected slot just got disabled, clear selection
+            if (slotInput.value === slotVal) {
+              slotInput.value = '';
+            }
+          } else {
+            btn.disabled = false;
+          }
+        });
+      } catch (error) {
+        console.error("Error checking slot availability:", error);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      // Bind check event listeners
+      document.getElementById('doctor').addEventListener('change', checkSlotAvailability);
+      document.getElementById('date').addEventListener('change', checkSlotAvailability);
+    });
   </script>
 </head>
 <body>
@@ -154,21 +208,21 @@
             <!-- Date Selection -->
             <div class="mb-4">
               <label class="form-label">Appointment Date</label>
-              <input type="date" name="date" class="form-control glass-input" required min="{{ min_date }}">
+              <input type="date" id="date" name="date" class="form-control glass-input" required min="{{ min_date }}">
             </div>
 
             <!-- Clickable Slots Grid (Morning) -->
             <div class="mb-3">
               <label class="form-label d-block mb-2" style="font-size: 0.85rem; color: #047857; letter-spacing: 0.5px; text-transform: uppercase;">Morning Slots (10:00 AM - 02:00 PM)</label>
               <div class="d-flex flex-wrap gap-2">
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '10:00 AM - 10:30 AM')">10:00 AM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '10:30 AM - 11:00 AM')">10:30 AM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '11:00 AM - 11:30 AM')">11:00 AM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '11:30 AM - 12:00 PM')">11:30 AM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '12:00 PM - 12:30 PM')">12:00 PM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '12:30 PM - 01:00 PM')">12:30 PM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '01:00 PM - 01:30 PM')">01:00 PM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '01:30 PM - 02:00 PM')">01:30 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="10:00 AM - 10:30 AM" onclick="selectSlot(this, '10:00 AM - 10:30 AM')">10:00 AM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="10:30 AM - 11:00 AM" onclick="selectSlot(this, '10:30 AM - 11:00 AM')">10:30 AM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="11:00 AM - 11:30 AM" onclick="selectSlot(this, '11:00 AM - 11:30 AM')">11:00 AM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="11:30 AM - 12:00 PM" onclick="selectSlot(this, '11:30 AM - 12:00 PM')">11:30 AM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="12:00 PM - 12:30 PM" onclick="selectSlot(this, '12:00 PM - 12:30 PM')">12:00 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="12:30 PM - 01:00 PM" onclick="selectSlot(this, '12:30 PM - 01:00 PM')">12:30 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="01:00 PM - 01:30 PM" onclick="selectSlot(this, '01:00 PM - 01:30 PM')">01:00 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="01:30 PM - 02:00 PM" onclick="selectSlot(this, '01:30 PM - 02:00 PM')">01:30 PM</button>
               </div>
             </div>
 
@@ -176,14 +230,14 @@
             <div class="mb-4">
               <label class="form-label d-block mb-2" style="font-size: 0.85rem; color: #047857; letter-spacing: 0.5px; text-transform: uppercase;">Evening Slots (06:00 PM - 10:00 PM)</label>
               <div class="d-flex flex-wrap gap-2">
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '06:00 PM - 06:30 PM')">06:00 PM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '06:30 PM - 07:00 PM')">06:30 PM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '07:00 PM - 07:30 PM')">07:00 PM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '07:30 PM - 08:00 PM')">07:30 PM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '08:00 PM - 08:30 PM')">08:00 PM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '08:30 PM - 09:00 PM')">08:30 PM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '09:00 PM - 09:30 PM')">09:00 PM</button>
-                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '09:30 PM - 10:00 PM')">09:30 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="06:00 PM - 06:30 PM" onclick="selectSlot(this, '06:00 PM - 06:30 PM')">06:00 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="06:30 PM - 07:00 PM" onclick="selectSlot(this, '06:30 PM - 07:00 PM')">06:30 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="07:00 PM - 07:30 PM" onclick="selectSlot(this, '07:00 PM - 07:30 PM')">07:00 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="07:30 PM - 08:00 PM" onclick="selectSlot(this, '07:30 PM - 08:00 PM')">08:00 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="08:00 PM - 08:30 PM" onclick="selectSlot(this, '08:00 PM - 08:30 PM')">08:00 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="08:30 PM - 09:00 PM" onclick="selectSlot(this, '08:30 PM - 09:00 PM')">08:30 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="09:00 PM - 09:30 PM" onclick="selectSlot(this, '09:00 PM - 09:30 PM')">09:00 PM</button>
+                <button type="button" class="btn btn-slot" data-slot-value="09:30 PM - 10:00 PM" onclick="selectSlot(this, '09:30 PM - 10:00 PM')">09:30 PM</button>
               </div>
             </div>
 

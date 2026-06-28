@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
+from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash, jsonify
 from db import get_connection
 from datetime import date, datetime, timedelta
 from io import BytesIO
@@ -374,6 +374,23 @@ def patient_book_details():
                            aadhaar=aadhaar, 
                            min_date=min_date, 
                            doctors_by_dept={})
+
+# -------------------- API Check Slots Availability --------------------
+@app.route("/api/check-slots", methods=["GET"])
+def check_slots():
+    doctor = request.args.get("doctor")
+    date_str = request.args.get("date")
+    if not doctor or not date_str:
+        return jsonify([])
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+        SELECT time_slot FROM appointments 
+        WHERE doctor = %s AND appointment_date = %s AND time_slot IS NOT NULL
+    """, (doctor, date_str))
+    appointments = cursor.fetchall()
+    cursor.close()
+    booked_slots = [appt["time_slot"] for appt in appointments]
+    return jsonify(booked_slots)
 
 # -------------------- Appointment PDF --------------------
 @app.route("/receptionist/appointment/pdf/<aadhaar>")
