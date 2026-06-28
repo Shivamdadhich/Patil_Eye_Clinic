@@ -22,7 +22,7 @@
           font-family: 'Outfit', sans-serif;
       }
       .appointment-card {
-          background: rgba(255, 255, 255, 0.9);
+          background: rgba(255, 255, 255, 0.95);
           border: 1px solid rgba(16, 185, 129, 0.15);
           border-radius: 24px;
           padding: 40px;
@@ -83,36 +83,6 @@
           color: #059669;
       }
   </style>
-  <script>
-    // Dynamic doctors grouped by department
-    const doctorsByDept = {{ doctors_by_dept | tojson }};
-
-    function updateDoctors() {
-      const deptSelect = document.getElementById("department");
-      const doctorSelect = document.getElementById("doctor");
-      const selectedDept = deptSelect.value;
-
-      // Clear current doctor options
-      doctorSelect.innerHTML = "";
-
-      // Add default choose option
-      const defaultOpt = document.createElement("option");
-      defaultOpt.value = "";
-      defaultOpt.text = "Choose Doctor";
-      defaultOpt.disabled = true;
-      defaultOpt.selected = true;
-      doctorSelect.appendChild(defaultOpt);
-
-      if (selectedDept && doctorsByDept[selectedDept]) {
-        doctorsByDept[selectedDept].forEach(function(docName) {
-          const opt = document.createElement("option");
-          opt.value = docName;
-          opt.text = docName;
-          doctorSelect.appendChild(opt);
-        });
-      }
-    }
-  </script>
 </head>
 <body>
   <div class="container">
@@ -128,29 +98,52 @@
 
           <form method="POST" action="/book-appointment/details">
             <input type="hidden" name="aadhaar" value="{{ aadhaar }}">
+            <input type="hidden" name="department" value="Ophthalmology">
             <input type="hidden" name="amount" value="500.00">
             <input type="hidden" name="payment_method" value="Cash">
 
-            <div class="mb-3">
-              <label for="department" class="form-label">Specialization / Department</label>
-              <select class="form-select glass-select" id="department" name="department" required onchange="updateDoctors()">
-                <option value="" disabled selected>Choose Specialty</option>
-                {% for dept in doctors_by_dept.keys() %}
-                  <option value="{{ dept }}">{{ dept }}</option>
-                {% endfor %}
-              </select>
-            </div>
-
+            <!-- Doctor Dropdown Selection -->
             <div class="mb-3">
               <label for="doctor" class="form-label">Consulting Specialist Doctor</label>
               <select class="form-select glass-select" id="doctor" name="doctor" required>
                 <option value="" disabled selected>Choose Doctor</option>
+                <option value="Dr. Prajakta Chachre">Dr. Prajakta Chachre</option>
+                <option value="Dr. XYZ">Dr. XYZ</option>
               </select>
             </div>
 
-            <div class="mb-4">
+            <!-- Date Selection -->
+            <div class="mb-3">
               <label class="form-label">Appointment Date</label>
               <input type="date" name="date" class="form-control glass-input" required min="{{ min_date }}">
+            </div>
+
+            <!-- Slot Selection -->
+            <div class="mb-4">
+              <label for="time_slot" class="form-label">Preferred Time Slot</label>
+              <select class="form-select glass-select" id="time_slot" name="time_slot" required>
+                <option value="" disabled selected>Choose Time Slot</option>
+                <optgroup label="Morning Slots (10:00 AM - 02:00 PM)">
+                  <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
+                  <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
+                  <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
+                  <option value="11:30 AM - 12:00 PM">11:30 AM - 12:00 PM</option>
+                  <option value="12:00 PM - 12:30 PM">12:00 PM - 12:30 PM</option>
+                  <option value="12:30 PM - 01:00 PM">12:30 PM - 01:00 PM</option>
+                  <option value="01:00 PM - 01:30 PM">01:00 PM - 01:30 PM</option>
+                  <option value="01:30 PM - 02:00 PM">01:30 PM - 02:00 PM</option>
+                </optgroup>
+                <optgroup label="Evening Slots (06:00 PM - 10:00 PM)">
+                  <option value="06:00 PM - 06:30 PM">06:00 PM - 06:30 PM</option>
+                  <option value="06:30 PM - 07:00 PM">06:30 PM - 07:00 PM</option>
+                  <option value="07:00 PM - 07:30 PM">07:00 PM - 07:30 PM</option>
+                  <option value="07:30 PM - 08:00 PM">07:30 PM - 08:00 PM</option>
+                  <option value="08:00 PM - 08:30 PM">08:00 PM - 08:30 PM</option>
+                  <option value="08:30 PM - 09:00 PM">08:30 PM - 09:00 PM</option>
+                  <option value="09:00 PM - 09:30 PM">09:00 PM - 09:30 PM</option>
+                  <option value="09:30 PM - 10:00 PM">09:30 PM - 10:00 PM</option>
+                </optgroup>
+              </select>
             </div>
 
             <button type="submit" class="btn btn-action btn-success w-100 mb-3">Book Appointment Slot ➔</button>
