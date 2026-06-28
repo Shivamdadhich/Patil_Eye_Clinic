@@ -307,6 +307,90 @@
         .btn-close-white {
             filter: invert(1) grayscale(100%) brightness(200%);
         }
+
+        /* Services Section Styles */
+        .service-card {
+            background: #ffffff;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            height: 100%;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: #10b981;
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.08);
+        }
+        .service-icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #047857;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .service-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+        .service-desc {
+            font-size: 0.95rem;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+        .service-badge {
+            background: #f0fdf4;
+            color: #10b981;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-top: 12px;
+            display: inline-block;
+        }
+        /* Custom styled tabs */
+        .services-tabs .nav-link {
+            border: 1px solid rgba(16, 185, 129, 0.2) !important;
+            border-radius: 30px !important;
+            margin: 0 5px 10px 5px;
+            padding: 10px 20px;
+            font-weight: 600;
+            color: #4b5563 !important;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+        .services-tabs .nav-link.active {
+            background: #059669 !important;
+            color: #ffffff !important;
+            border-color: #059669 !important;
+        }
+        .service-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.92rem;
+            color: #374151;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #f9fafb;
+            transition: background 0.2s ease;
+            height: 100%;
+        }
+        .service-list-item:hover {
+            background: #f0fdf4;
+        }
+        .check-icon {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -382,6 +466,143 @@
                             Access Reports / Prescriptions <span>&rarr;</span>
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Specialized Services Section -->
+    <div class="bg-white py-5 border-top border-bottom border-success border-opacity-10">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <span class="text-success fw-bold text-uppercase tracking-wider" style="font-size: 0.85rem; letter-spacing: 1.5px;">Patient Care & Operations</span>
+                <h2 class="fw-extrabold text-dark mt-2" style="font-size: 2.2rem; font-family: 'Outfit', sans-serif;">Our Specialized Services</h2>
+                <p class="text-muted mx-auto mt-2" style="max-width: 600px; font-size: 1rem;">Patil Eye Care & Ayurvedic Clinic offers advanced ocular diagnostic treatments, modern surgeries, and holistic natural eye therapies.</p>
+            </div>
+
+            <!-- 4 Featured Visual Cards -->
+            <div class="row g-4 justify-content-center mb-5">
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-card">
+                        <div class="service-icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-shield-plus" viewBox="0 0 16 16">
+                                <path d="M8.5 5a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V9a.5.5 0 0 0 1 0V7.5H10a.5.5 0 0 0 0-1H8.5z"/>
+                                <path d="M1.2 5.09a2.5 2.5 0 0 0-1 1.95v4a6.5 6.5 0 0 0 4.15 6A12 12 0 0 0 8 16a12 12 0 0 0 3.65-.86A6.5 6.5 0 0 0 16 11V7.04a2.5 2.5 0 0 0-1-1.95L8 .32zM8 1.32l6.8 4.72A1.5 1.5 0 0 1 15 7v4a5.5 5.5 0 0 1-3.5 5A11 11 0 0 1 8 15a11 11 0 0 1-3.5-1A5.5 5.5 0 0 1 1 11V7c0-.28.11-.55.3-.72z"/>
+                            </svg>
+                        </div>
+                        <h4 class="service-title">Cataract & Lasik</h4>
+                        <p class="service-desc">Phacoemulsification modern surgeries with premium multifocal Foldable IOL Implantation & Laser Lasik vision correction treatments.</p>
+                        <span class="service-badge">Advanced Surgery</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-card">
+                        <div class="service-icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 4 8 4s3.88.668 5.168 1.957A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12 8 12s-3.879-.668-5.168-1.957A13 13 0 0 1 1.172 8L1 8"/>
+                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                            </svg>
+                        </div>
+                        <h4 class="service-title">Glaucoma Care</h4>
+                        <p class="service-desc">Early glaucoma detection, pediatric glaucoma management, and complete pressure evaluation & medical treatment routines.</p>
+                        <span class="service-badge">Diagnostics</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-card">
+                        <div class="service-icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-heart" viewBox="0 0 16 16">
+                                <path d="M9 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h10s1 0 1-1-1-4-6-4-6 3-6 4Zm13.5-8.09c1.387-1.425 4.855 1.07 0 4.277-4.854-3.207-1.387-5.702 0-4.276Z"/>
+                            </svg>
+                        </div>
+                        <h4 class="service-title">Pediatric & Squint</h4>
+                        <p class="service-desc">Lazy Eye (Amblyopia) patch therapies, squint alignment corrections, pediatric eye disorder management, and children vision therapy.</p>
+                        <span class="service-badge">Pediatric Care</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-card">
+                        <div class="service-icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-activity" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M6 2a.5.5 0 0 1 .47.33L10 12.036l1.53-4.22a.5.5 0 0 1 .817-.1l3 4a.5.5 0 0 1-.8.6L12 9.5 10.47 13.77a.5.5 0 0 1-.94 0L6 3.964 4.47 8.77a.5.5 0 0 1-.94 0L1.53 3.964l-.06.18a.5.5 0 0 1-.94 0L.03 2.18a.5.5 0 0 1 .94 0l.47 1.41L3.97 9.82 5.53 2.1a.5.5 0 0 1 .47-.1"/>
+                            </svg>
+                        </div>
+                        <h4 class="service-title">Natural Therapy</h4>
+                        <p class="service-desc">Holistic Ayurvedic consultation, dry eyes therapy, computer vision syndrome remedies, eye exercises, and yoga therapies.</p>
+                        <span class="service-badge">Ayurvedic / Wellness</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabbed Services List for Rest of Services -->
+            <div class="text-center mb-4">
+                <h3 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif;">Full Services Catalogue</h3>
+            </div>
+            
+            <ul class="nav nav-pills justify-content-center services-tabs mb-4" id="servicesTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="treatments-tab" data-bs-toggle="pill" data-bs-target="#treatments" type="button" role="tab" aria-controls="treatments" aria-selected="true">Treatments & Surgeries</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="therapies-tab" data-bs-toggle="pill" data-bs-target="#therapies" type="button" role="tab" aria-controls="therapies" aria-selected="false">Therapies & Tests</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="facilities-tab" data-bs-toggle="pill" data-bs-target="#facilities" type="button" role="tab" aria-controls="facilities" aria-selected="false">Procedures & Facilities</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="servicesTabContent">
+                <!-- Tab 1: Treatments & Surgeries -->
+                <div class="tab-pane fade show active" id="treatments" role="tabpanel" aria-labelledby="treatments-tab">
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Retina and Uvea</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Keratoconus Care</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Diabetic Retinal Disease</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Dry Eyes Treatment</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Eye Allergy & Infections</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Pterygium & Stye Treatment</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Retina Surgery And Lasik</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Eye Muscle & Squint Surgery</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Ocular Oncology & Ptosis</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Corneal Disorder Management</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Paediatric Eye Disease Management</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Optic Neuritis & Uveitis</div></div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Therapies & Tests -->
+                <div class="tab-pane fade" id="therapies" role="tabpanel" aria-labelledby="therapies-tab">
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Vision Therapy for Children</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Laser & Yoga Eye Therapy</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Computer Vision Syndrome Therapy</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Eye Exercise & Patch Therapy</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Amblyopia (Lazy Eye) Therapy</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Low Vision Rehabilitation</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Visual Field Test (Perimetry)</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Retina Examination (Fundus)</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> A Scan Biometry</div></div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Procedures & Facilities -->
+                <div class="tab-pane fade" id="facilities" role="tabpanel" aria-labelledby="facilities-tab">
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Foreign Body Removal</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Phacoemulsification (Cataract)</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Premium Multifocal IOL Implantation</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Keratoplasty (Corneal Transplant)</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Laser Yag Capsulotomy</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Chalazion Excision Surgery</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Wheelchair Accessible Entry/Elevators</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Online Appointment Booking</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Opticals & Contact Lens Dispensary</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Waiting Area & Parking Facilities</div></div>
+                        <div class="col-sm-6 col-md-4"><div class="service-list-item"><span class="check-icon">&#10004;</span> Courier Facility for Medicines</div></div>
+                    </div>
                 </div>
             </div>
         </div>
