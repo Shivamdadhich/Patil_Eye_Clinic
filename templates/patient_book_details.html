@@ -82,7 +82,45 @@
       .back-link:hover {
           color: #059669;
       }
+      
+      /* Clickable Slot Styling */
+      .btn-slot {
+          background: rgba(255, 255, 255, 0.8);
+          border: 1.5px solid rgba(16, 185, 129, 0.2);
+          border-radius: 10px;
+          padding: 8px 12px;
+          font-size: 0.82rem;
+          font-weight: 600;
+          color: #064e3b;
+          transition: all 0.2s ease;
+          flex: 1 1 calc(25% - 8px);
+          min-width: 90px;
+          text-align: center;
+      }
+      .btn-slot:hover {
+          background: rgba(16, 185, 129, 0.1);
+          border-color: #10b981;
+          color: #047857;
+      }
+      .btn-slot.active {
+          background: #10b981 !important;
+          border-color: #10b981 !important;
+          color: #ffffff !important;
+          box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+      }
   </style>
+  <script>
+    function selectSlot(btn, timeString) {
+      // Remove active class from all slots
+      document.querySelectorAll('.btn-slot').forEach(function(el) {
+        el.classList.remove('active');
+      });
+      // Add active class to clicked slot
+      btn.classList.add('active');
+      // Set value in hidden input
+      document.getElementById('selected_time_slot').value = timeString;
+    }
+  </script>
 </head>
 <body>
   <div class="container">
@@ -101,6 +139,7 @@
             <input type="hidden" name="department" value="Ophthalmology">
             <input type="hidden" name="amount" value="500.00">
             <input type="hidden" name="payment_method" value="Cash">
+            <input type="hidden" name="time_slot" id="selected_time_slot" required>
 
             <!-- Doctor Dropdown Selection -->
             <div class="mb-3">
@@ -113,37 +152,39 @@
             </div>
 
             <!-- Date Selection -->
-            <div class="mb-3">
+            <div class="mb-4">
               <label class="form-label">Appointment Date</label>
               <input type="date" name="date" class="form-control glass-input" required min="{{ min_date }}">
             </div>
 
-            <!-- Slot Selection -->
+            <!-- Clickable Slots Grid (Morning) -->
+            <div class="mb-3">
+              <label class="form-label d-block mb-2" style="font-size: 0.85rem; color: #047857; letter-spacing: 0.5px; text-transform: uppercase;">Morning Slots (10:00 AM - 02:00 PM)</label>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '10:00 AM - 10:30 AM')">10:00 AM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '10:30 AM - 11:00 AM')">10:30 AM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '11:00 AM - 11:30 AM')">11:00 AM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '11:30 AM - 12:00 PM')">11:30 AM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '12:00 PM - 12:30 PM')">12:00 PM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '12:30 PM - 01:00 PM')">12:30 PM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '01:00 PM - 01:30 PM')">01:00 PM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '01:30 PM - 02:00 PM')">01:30 PM</button>
+              </div>
+            </div>
+
+            <!-- Clickable Slots Grid (Evening) -->
             <div class="mb-4">
-              <label for="time_slot" class="form-label">Preferred Time Slot</label>
-              <select class="form-select glass-select" id="time_slot" name="time_slot" required>
-                <option value="" disabled selected>Choose Time Slot</option>
-                <optgroup label="Morning Slots (10:00 AM - 02:00 PM)">
-                  <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
-                  <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
-                  <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
-                  <option value="11:30 AM - 12:00 PM">11:30 AM - 12:00 PM</option>
-                  <option value="12:00 PM - 12:30 PM">12:00 PM - 12:30 PM</option>
-                  <option value="12:30 PM - 01:00 PM">12:30 PM - 01:00 PM</option>
-                  <option value="01:00 PM - 01:30 PM">01:00 PM - 01:30 PM</option>
-                  <option value="01:30 PM - 02:00 PM">01:30 PM - 02:00 PM</option>
-                </optgroup>
-                <optgroup label="Evening Slots (06:00 PM - 10:00 PM)">
-                  <option value="06:00 PM - 06:30 PM">06:00 PM - 06:30 PM</option>
-                  <option value="06:30 PM - 07:00 PM">06:30 PM - 07:00 PM</option>
-                  <option value="07:00 PM - 07:30 PM">07:00 PM - 07:30 PM</option>
-                  <option value="07:30 PM - 08:00 PM">07:30 PM - 08:00 PM</option>
-                  <option value="08:00 PM - 08:30 PM">08:00 PM - 08:30 PM</option>
-                  <option value="08:30 PM - 09:00 PM">08:30 PM - 09:00 PM</option>
-                  <option value="09:00 PM - 09:30 PM">09:00 PM - 09:30 PM</option>
-                  <option value="09:30 PM - 10:00 PM">09:30 PM - 10:00 PM</option>
-                </optgroup>
-              </select>
+              <label class="form-label d-block mb-2" style="font-size: 0.85rem; color: #047857; letter-spacing: 0.5px; text-transform: uppercase;">Evening Slots (06:00 PM - 10:00 PM)</label>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '06:00 PM - 06:30 PM')">06:00 PM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '06:30 PM - 07:00 PM')">06:30 PM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '07:00 PM - 07:30 PM')">07:00 PM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '07:30 PM - 08:00 PM')">07:30 PM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '08:00 PM - 08:30 PM')">08:00 PM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '08:30 PM - 09:00 PM')">08:30 PM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '09:00 PM - 09:30 PM')">09:00 PM</button>
+                <button type="button" class="btn btn-slot" onclick="selectSlot(this, '09:30 PM - 10:00 PM')">09:30 PM</button>
+              </div>
             </div>
 
             <button type="submit" class="btn btn-action btn-success w-100 mb-3">Book Appointment Slot ➔</button>
