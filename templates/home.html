@@ -265,10 +265,49 @@
             60% { transform: translateY(-5px); }
         }
 
+        .brand-logo-img {
+            height: 52px;
+            width: auto;
+            margin-right: 12px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+            transition: all 0.3s ease;
+        }
+        .brand-title-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        .brand-tagline-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            font-size: 0.6rem;
+            letter-spacing: 4px;
+            color: rgba(255, 255, 255, 0.95);
+            text-transform: uppercase;
+            margin-top: 6px;
+            transition: all 0.3s ease;
+        }
+
         @media (max-width: 768px) {
-            .hero-title { font-size: 2.5rem; }
-            .hero-section { padding: 50px 0 30px 0; min-height: auto; }
-            .navbar-brand { font-size: 1.6rem; }
+            .hero-title { font-size: 2.3rem; }
+            .hero-section { padding: 40px 0 20px 0; min-height: auto; }
+            .brand-logo-img {
+                height: 38px;
+                margin-right: 8px;
+            }
+            .brand-title-text {
+                font-size: 1.15rem;
+                letter-spacing: 0.5px;
+            }
+            .brand-tagline-text {
+                font-size: 0.42rem;
+                letter-spacing: 2px;
+                margin-top: 3px;
+            }
         }
 
         /* Glassmorphic Light Sidebar */
@@ -398,10 +437,10 @@
         <nav class="navbar navbar-expand-lg navbar-dark glass-nav shadow-sm py-3">
             <div class="container px-4">
                 <a class="navbar-brand d-flex align-items-center text-decoration-none" href="/">
-                    <img src="/static/client_images/logo_transparent.png" alt="Patil Eye Clinic Logo" style="height: 52px; width: auto; margin-right: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+                    <img src="/static/client_images/logo_transparent.png" alt="Patil Eye Clinic Logo" class="brand-logo-img">
                     <div class="d-flex flex-column text-start">
-                        <span class="fw-bold text-white lh-1" style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.8rem; letter-spacing: 1px; text-transform: uppercase;">Patil Eye Clinic</span>
-                        <span style="font-family: 'Montserrat', sans-serif; font-weight: 300; font-size: 0.6rem; letter-spacing: 4px; color: rgba(255, 255, 255, 0.95); text-transform: uppercase; margin-top: 6px;">Ancient In Modern Way</span>
+                        <span class="fw-bold brand-title-text lh-1">Patil Eye Clinic</span>
+                        <span class="brand-tagline-text">Ancient In Modern Way</span>
                     </div>
                 </a>
                 <div class="ms-auto">
