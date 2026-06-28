@@ -95,8 +95,8 @@
           <form method="POST" action="/book-appointment/register">
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">Aadhaar Number</label>
-                <input type="text" name="aadhaar" class="form-control glass-input" value="{{ aadhaar }}" readonly required>
+                <label class="form-label">Aadhaar Number <span class="text-muted" style="font-size: 0.8rem;">(Locked)</span></label>
+                <input type="text" name="aadhaar" class="form-control glass-input" value="{{ aadhaar }}" readonly required style="background-color: #e5e7eb !important; color: #4b5563 !important; cursor: not-allowed; pointer-events: none; border-color: #d1d5db !important;">
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label">Full Name</label>

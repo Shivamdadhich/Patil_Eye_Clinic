@@ -279,14 +279,42 @@ def patient_book_aadhaar():
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute("SELECT * FROM patients WHERE aadhaar = %s", (aadhaar,))
         patient = cursor.fetchone()
-        cursor.close()
 
         if patient:
-            return redirect(url_for("patient_book_details", aadhaar=aadhaar))
+            # Check for any active/future appointments
+            today_str = get_ist_now().date().isoformat()
+            cursor.execute("""
+                SELECT * FROM appointments 
+                WHERE aadhaar = %s AND appointment_date >= %s 
+                ORDER BY appointment_date ASC LIMIT 1
+            """, (aadhaar, today_str))
+            active_appointment = cursor.fetchone()
+            cursor.close()
+
+            if active_appointment:
+                return render_template("patient_active_booking.html", 
+                                       patient=patient, 
+                                       appointment=active_appointment)
+            else:
+                return redirect(url_for("patient_book_details", aadhaar=aadhaar))
         else:
+            cursor.close()
             return redirect(url_for("patient_book_register", aadhaar=aadhaar))
 
     return render_template("patient_book_aadhaar.html")
+
+@app.route("/book-appointment/cancel", methods=["POST"])
+def patient_cancel_appointment():
+    aadhaar = normalize_aadhaar(request.form.get("aadhaar"))
+    appointment_id = request.form.get("appointment_id")
+    
+    cursor = mysql.connection.cursor()
+    cursor.execute("DELETE FROM appointments WHERE appointment_id = %s AND aadhaar = %s", (appointment_id, aadhaar))
+    mysql.connection.commit()
+    cursor.close()
+    
+    flash("Your appointment has been successfully cancelled. You can now book a new slot.")
+    return redirect(url_for("patient_book_aadhaar"))
 
 @app.route("/book-appointment/register", methods=["GET", "POST"])
 def patient_book_register():
