@@ -94,7 +94,7 @@ def remove_user(role, username):
 
 def print_help():
     print("""
-CareConnect DB Management Tool
+Patil Eye Clinic DB Management Tool
 -------------------------------
 Usage:
   python db_tool.py list

@@ -287,7 +287,7 @@ def generate_pdf(aadhaar):
     # Header
     pdf.set_fill_color(220, 230, 241)
     pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 12, "CareConnect Hospital", ln=True, align="C", fill=True)
+    pdf.cell(0, 12, "Patil Eye Clinic Hospital", ln=True, align="C", fill=True)
 
     pdf.set_font("Arial", 'I', 12)
     pdf.set_text_color(80, 80, 80)
