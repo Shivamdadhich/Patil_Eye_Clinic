@@ -189,13 +189,23 @@
         }
 
         .footer {
-            padding: 24px 0;
-            text-align: center;
+            padding: 40px 0 20px 0;
+            font-size: 0.9rem;
+            color: #4b5563;
+            border-top: 1px solid rgba(16, 185, 129, 0.15);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            margin-top: 80px;
+        }
+        .footer-title {
+            color: #064e3b;
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .footer-text {
+            line-height: 1.6;
             font-size: 0.85rem;
-            color: #6b7280;
-            border-top: 1px solid rgba(16, 185, 129, 0.1);
-            background: rgba(255, 255, 255, 0.4);
-            margin-top: 60px;
         }
 
         @keyframes pulse {
@@ -267,38 +277,46 @@
                 </div>
             </div>
         </div>
-
-        <!-- Clinic Details Section -->
-        <div class="row mt-5 justify-content-center">
-            <div class="col-md-10">
-                <div class="feature-card text-center" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.15);">
-                    <h4 class="fw-bold mb-3" style="color: #064e3b;">Patil Eye Care & Ayurvedic Clinic</h4>
-                    <div class="row g-3 justify-content-center mt-2">
-                        <div class="col-sm-4 text-start">
-                            <strong>📍 Address:</strong><br>
-                            Office No.7,8, Ranjan Heights,<br>
-                            SB Patil School Rd, above UCO Bank,<br>
-                            Ravet, Pimpri-Chinchwad, MH - 412101
-                        </div>
-                        <div class="col-sm-4 text-start">
-                            <strong>📞 Phone / Contact:</strong><br>
-                            +91 90117 72432 / 090117 72432
-                        </div>
-                        <div class="col-sm-4 text-start">
-                            <strong>⏰ Timings:</strong><br>
-                            Morning: 10:00 AM - 02:00 PM<br>
-                            Evening: 07:00 PM - 10:00 PM<br>
-                            (Sunday Closed)
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <footer class="footer">
         <div class="container">
-            © 2026 Patil Eye Care Smart Clinic Ecosystem. Built with security and precision.
+            <div class="row g-4 text-start">
+                <!-- Address Column -->
+                <div class="col-md-4">
+                    <div class="footer-title">📍 Patil Eye Care & Ayurvedic Clinic</div>
+                    <div class="footer-text">
+                        Office No.7,8, Ranjan Heights,<br>
+                        SB Patil School Rd, above UCO Bank,<br>
+                        Ravet, Pimpri-Chinchwad, MH - 412101
+                    </div>
+                </div>
+                
+                <!-- Contact Column -->
+                <div class="col-md-4">
+                    <div class="footer-title">📞 Contact Details</div>
+                    <div class="footer-text">
+                        <strong>Phone:</strong> +91 90117 72432 / 090117 72432<br>
+                        <strong>Email:</strong> info@patileyecare.com
+                    </div>
+                </div>
+
+                <!-- Timings Column -->
+                <div class="col-md-4">
+                    <div class="footer-title">⏰ Clinic Timings</div>
+                    <div class="footer-text">
+                        <strong>Morning:</strong> 10:00 AM - 02:00 PM<br>
+                        <strong>Evening:</strong> 07:00 PM - 10:00 PM<br>
+                        <span class="text-danger">Sunday Closed</span>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4" style="border-top: 1px solid rgba(16, 185, 129, 0.15);">
+            <div class="row">
+                <div class="col-12 text-center text-muted" style="font-size: 0.8rem;">
+                    © 2026 Patil Eye Care Smart Clinic Ecosystem. Built with security and precision.
+                </div>
+            </div>
         </div>
     </footer>
 
