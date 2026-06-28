@@ -123,51 +123,112 @@ def receptionist_login():
 
     return render_template("receptionist_login.html")
 
-# -------------------- Password Reset via Firebase OTP --------------------
-@app.route("/forgot-password", methods=["GET"])
+# -------------------- Password Reset via SMTP Email OTP --------------------
+def send_reset_email(to_email, otp):
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+
+    smtp_server = "smtp.gmail.com"
+    port = 587
+    sender_email = os.getenv("SMTP_EMAIL", "testingwebappshivam@gmail.com")
+    sender_password = os.getenv("SMTP_PASSWORD", "xszj pfwm jfsx hykg")
+    
+    message = MIMEMultipart()
+    message["From"] = f"Patil Eye Clinic <{sender_email}>"
+    message["To"] = to_email
+    message["Subject"] = "Password Reset Verification Code - Patil Eye Clinic"
+    
+    body = f"""Dear User,
+    
+Your verification code to reset your password is: {otp}
+
+This code is valid for 5 minutes. Please do not share this OTP with anyone.
+
+Best regards,
+Patil Eye Clinic Support Team"""
+
+    message.attach(MIMEText(body, "plain"))
+    
+    try:
+        server = smtplib.SMTP(smtp_server, port)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, to_email, message.as_string())
+        server.quit()
+        return True
+    except Exception as e:
+        print("SMTP Error:", e)
+        return False
+
+@app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
-    return render_template("forgot_password.html",
-                           firebase_api_key=os.getenv("FIREBASE_API_KEY", ""),
-                           firebase_auth_domain=os.getenv("FIREBASE_AUTH_DOMAIN", ""),
-                           firebase_project_id=os.getenv("FIREBASE_PROJECT_ID", ""),
-                           firebase_storage_bucket=os.getenv("FIREBASE_STORAGE_BUCKET", ""),
-                           firebase_messaging_sender_id=os.getenv("FIREBASE_MESSAGING_SENDER_ID", ""),
-                           firebase_app_id=os.getenv("FIREBASE_APP_ID", ""))
+    if request.method == "POST":
+        step = request.form.get("step")
+        role = request.form.get("role")
+        username = request.form.get("username")
 
-@app.route("/api/verify-staff", methods=["POST"])
-def api_verify_staff():
-    data = request.get_json() or {}
-    role = data.get("role")
-    username = data.get("username")
+        if role not in ["receptionists", "doctors", "lab_staff"]:
+            flash("Invalid account role selected.", "danger")
+            return render_template("forgot_password.html", step="username")
 
-    if role not in ["receptionists", "doctors", "lab_staff"]:
-        return jsonify({"success": False, "message": "Invalid account role selected."})
+        if step == "username":
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            query = f"SELECT email FROM {role} WHERE username = %s"
+            cursor.execute(query, (username,))
+            staff = cursor.fetchone()
+            cursor.close()
 
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    query = f"SELECT contact FROM {role} WHERE username = %s"
-    cursor.execute(query, (username,))
-    staff = cursor.fetchone()
-    cursor.close()
+            if staff and staff.get("email"):
+                import random
+                otp = str(random.randint(100000, 999999))
+                
+                # Store in session
+                session["reset_otp"] = otp
+                session["reset_username"] = username
+                session["reset_role"] = role
+                session["reset_email"] = staff["email"]
 
-    if staff and staff.get("contact"):
-        contact_val = staff["contact"]
-        masked_contact = "xxxxxx" + contact_val[-4:] if len(contact_val) >= 4 else contact_val
-        return jsonify({"success": True, "contact": contact_val, "masked_contact": masked_contact})
-    else:
-        return jsonify({"success": False, "message": "No matching account found with registered username."})
+                # Mask email for UI display
+                email_parts = staff["email"].split("@")
+                masked_email = email_parts[0][0] + "***" + email_parts[0][-1] + "@" + email_parts[1] if len(email_parts[0]) > 2 else "***@" + email_parts[1]
 
-@app.route("/forgot-password/reset", methods=["POST"])
-def forgot_password_reset_page():
-    role = request.form.get("role")
-    username = request.form.get("username")
-    contact = request.form.get("contact")
-    return render_template("reset_password.html", role=role, username=username, contact=contact)
+                if send_reset_email(staff["email"], otp):
+                    return render_template("forgot_password.html", step="otp", role=role, username=username, email=staff["email"], masked_email=masked_email)
+                else:
+                    flash("Failed to send OTP email. Please try again later.", "danger")
+                    return render_template("forgot_password.html", step="username")
+            elif staff:
+                flash("No email registered for this staff account.", "warning")
+                return render_template("forgot_password.html", step="username")
+            else:
+                flash("No matching account found with that username.", "danger")
+                return render_template("forgot_password.html", step="username")
+
+        elif step == "otp":
+            entered_otp = request.form.get("otp_code")
+            stored_otp = session.get("reset_otp")
+            stored_username = session.get("reset_username")
+            stored_role = session.get("reset_role")
+            stored_email = session.get("reset_email")
+
+            if entered_otp and entered_otp == stored_otp and username == stored_username and role == stored_role:
+                # Success! Redirect to password reset form
+                return render_template("reset_password.html", role=role, username=username, email=stored_email)
+            else:
+                flash("Invalid OTP verification code. Please try again.", "danger")
+                # Re-mask email
+                email_parts = stored_email.split("@") if stored_email else ["", ""]
+                masked_email = email_parts[0][0] + "***" + email_parts[0][-1] + "@" + email_parts[1] if len(email_parts[0]) > 2 else "***@" + email_parts[1]
+                return render_template("forgot_password.html", step="otp", role=role, username=username, email=stored_email, masked_email=masked_email)
+
+    return render_template("forgot_password.html", step="username")
 
 @app.route("/forgot-password/complete", methods=["POST"])
 def forgot_password_complete():
     role = request.form.get("role")
     username = request.form.get("username")
-    contact = request.form.get("contact")
+    email = request.form.get("email")
     password = request.form.get("password")
 
     if role not in ["receptionists", "doctors", "lab_staff"]:
@@ -176,13 +237,19 @@ def forgot_password_complete():
     # Backend complexity validation
     if len(password) < 8 or not any(c.isupper() for c in password) or not any(c.islower() for c in password) or not any(c.isdigit() for c in password) or not any(not c.isalnum() for c in password):
         flash("Password does not meet the complexity requirements.", "danger")
-        return render_template("reset_password.html", role=role, username=username, contact=contact)
+        return render_template("reset_password.html", role=role, username=username, email=email)
 
     cursor = mysql.connection.cursor()
-    query = f"UPDATE {role} SET password = %s WHERE username = %s AND contact = %s"
-    cursor.execute(query, (password, username, contact))
+    query = f"UPDATE {role} SET password = %s WHERE username = %s AND email = %s"
+    cursor.execute(query, (password, username, email))
     mysql.connection.commit()
     cursor.close()
+
+    # Clear session values
+    session.pop("reset_otp", None)
+    session.pop("reset_username", None)
+    session.pop("reset_role", None)
+    session.pop("reset_email", None)
 
     flash("Password reset successfully. You can now login with your new password.", "success")
     return redirect(url_for("receptionist_login"))
