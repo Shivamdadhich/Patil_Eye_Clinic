@@ -323,13 +323,13 @@ def patient_book_register():
 
     aadhaar = normalize_aadhaar(request.args.get("aadhaar"))
     return render_template("patient_book_register.html", aadhaar=aadhaar, get_today=get_ist_now().date().isoformat())
-
 @app.route("/book-appointment/details", methods=["GET", "POST"])
 def patient_book_details():
     if request.method == "POST":
         aadhaar = normalize_aadhaar(request.form.get("aadhaar"))
-        department = request.form.get("department")
+        department = request.form.get("department", "Ophthalmology")
         doctor = request.form.get("doctor")
+        time_slot = request.form.get("time_slot", "Not Specified")
         
         raw_date = request.form.get("date")
         appointment_date = None
@@ -354,9 +354,9 @@ def patient_book_details():
             return f"Error: No patient found with Aadhaar {aadhaar}"
 
         cursor.execute("""
-            INSERT INTO appointments (aadhaar, department, doctor, appointment_date, amount, payment_method)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (aadhaar, department, doctor, appointment_date, amount_val, payment_method))
+            INSERT INTO appointments (aadhaar, department, doctor, appointment_date, amount, payment_method, time_slot)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (aadhaar, department, doctor, appointment_date, amount_val, payment_method, time_slot))
         mysql.connection.commit()
         cursor.close()
 
@@ -365,27 +365,15 @@ def patient_book_details():
                                name=patient["name"],
                                department=department,
                                doctor=doctor,
-                               appointment_date=appointment_date)
+                               appointment_date=appointment_date,
+                               time_slot=time_slot)
 
     aadhaar = normalize_aadhaar(request.args.get("aadhaar"))
     min_date = get_ist_now().date().isoformat()
-
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT name, specialization FROM doctors")
-    doctors = cursor.fetchall()
-    cursor.close()
-
-    doctors_by_dept = {}
-    for doc in doctors:
-        dept = doc["specialization"]
-        if dept not in doctors_by_dept:
-            doctors_by_dept[dept] = []
-        doctors_by_dept[dept].append(doc["name"])
-
     return render_template("patient_book_details.html", 
                            aadhaar=aadhaar, 
                            min_date=min_date, 
-                           doctors_by_dept=doctors_by_dept)
+                           doctors_by_dept={})
 
 # -------------------- Appointment PDF --------------------
 @app.route("/receptionist/appointment/pdf/<aadhaar>")
