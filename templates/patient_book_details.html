@@ -176,6 +176,14 @@
         alert("Please select a time slot before booking the appointment.");
         return false;
       }
+      // Disable the submit button to prevent double submission
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        setTimeout(() => {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = 'Booking... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        }, 10);
+      }
       return true;
     }
 
