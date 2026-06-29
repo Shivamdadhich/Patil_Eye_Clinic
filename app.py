@@ -464,6 +464,48 @@ def make_appointment():
                            min_date=min_date, 
                            doctors_by_dept=doctors_by_dept)
 
+# -------------------- Pharmacy Billing --------------------
+@app.route("/receptionist/pharmacy-billing", methods=["GET", "POST"])
+def receptionist_pharmacy_billing():
+    if not session.get("receptionist_logged_in"):
+        return redirect(url_for("receptionist_login"))
+        
+    if request.method == "POST":
+        aadhaar = normalize_aadhaar(request.form.get("aadhaar"))
+        amount = request.form.get("amount")
+        payment_method = request.form.get("payment_method", "UPI")
+        
+        # Verify amount is valid
+        try:
+            amount_val = float(amount)
+        except (TypeError, ValueError):
+            flash("Invalid amount entered. Please try again.", "danger")
+            return redirect(url_for("receptionist_pharmacy_billing", aadhaar=aadhaar))
+            
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # Verify patient exists
+        cursor.execute("SELECT name FROM patients WHERE aadhaar = %s", (aadhaar,))
+        patient = cursor.fetchone()
+        
+        if not patient:
+            cursor.close()
+            flash("Patient not found in database! Please check the Aadhaar number.", "danger")
+            return redirect(url_for("receptionist_pharmacy_billing", aadhaar=aadhaar))
+            
+        # Record pharmacy bill
+        cursor.execute("""
+            INSERT INTO pharmacy_bills (aadhaar, amount, payment_method)
+            VALUES (%s, %s, %s)
+        """, (aadhaar, amount_val, payment_method))
+        mysql.connection.commit()
+        cursor.close()
+        
+        flash(f"Pharmacy bill of ₹{amount_val:.2f} successfully recorded for {patient['name']}!", "success")
+        return redirect(url_for("receptionist_dashboard"))
+        
+    aadhaar = normalize_aadhaar(request.args.get("aadhaar"))
+    return render_template("pharmacy_billing.html", aadhaar=aadhaar)
+
 # -------------------- Public Patient Booking Flow --------------------
 @app.route("/book-appointment", methods=["GET", "POST"])
 def patient_book_aadhaar():
@@ -614,6 +656,19 @@ def check_slots():
     cursor.close()
     booked_slots = [appt["time_slot"] for appt in appointments]
     return jsonify(booked_slots)
+
+@app.route("/api/get-patient-name", methods=["GET"])
+def get_patient_name_api():
+    aadhaar = normalize_aadhaar(request.args.get("aadhaar"))
+    if not aadhaar:
+        return jsonify({"status": "error", "message": "No Aadhaar provided"})
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT name FROM patients WHERE aadhaar = %s", (aadhaar,))
+    patient = cursor.fetchone()
+    cursor.close()
+    if patient:
+        return jsonify({"status": "success", "name": patient["name"]})
+    return jsonify({"status": "error", "message": "Patient not found"})
 
 # -------------------- Appointment PDF --------------------
 @app.route("/receptionist/appointment/pdf/<aadhaar>")
@@ -1673,6 +1728,14 @@ def admin_dashboard():
     """, (start_date, end_date))
     lab_sales = cur.fetchall()
 
+    cur.execute("""
+        SELECT payment_method, SUM(COALESCE(amount, 0.00)) as total 
+        FROM pharmacy_bills 
+        WHERE DATE(created_at) BETWEEN %s AND %s 
+        GROUP BY payment_method
+    """, (start_date, end_date))
+    pharmacy_sales = cur.fetchall()
+
     # Merge payments
     sales_by_method = {"Cash": 0.0, "UPI": 0.0, "Card": 0.0}
     for s in appt_sales:
@@ -1682,6 +1745,12 @@ def admin_dashboard():
             sales_by_method[method] += float(total_val) if total_val is not None else 0.0
             
     for s in lab_sales:
+        method = s["payment_method"]
+        if method in sales_by_method:
+            total_val = s["total"]
+            sales_by_method[method] += float(total_val) if total_val is not None else 0.0
+
+    for s in pharmacy_sales:
         method = s["payment_method"]
         if method in sales_by_method:
             total_val = s["total"]
@@ -1708,10 +1777,19 @@ def admin_dashboard():
     """, (start_date, end_date))
     lab_txns = cur.fetchall()
 
+    cur.execute("""
+        SELECT 'Pharmacy' as type, p.name as patient_name, 'Medicines Billing' as details, 
+               COALESCE(ph.amount, 0.00) as amount, ph.payment_method, DATE(ph.created_at) as txn_date 
+        FROM pharmacy_bills ph 
+        JOIN patients p ON ph.aadhaar = p.aadhaar 
+        WHERE DATE(ph.created_at) BETWEEN %s AND %s
+    """, (start_date, end_date))
+    pharmacy_txns = cur.fetchall()
+
     cur.close()
 
     # Combine and sort transactions by date descending
-    all_txns = list(appt_txns) + list(lab_txns)
+    all_txns = list(appt_txns) + list(lab_txns) + list(pharmacy_txns)
     all_txns.sort(key=lambda x: x["txn_date"], reverse=True)
 
     return render_template("admin_dashboard.html",
