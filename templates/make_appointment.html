@@ -85,6 +85,18 @@
           color: #059669;
       }
   </style>
+  <script>
+    function preventDoubleSubmit(event) {
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        setTimeout(() => {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = 'Processing... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        }, 10);
+      }
+      return true;
+    }
+  </script>
 </head>
 <body>
   <div class="container">
@@ -98,7 +110,7 @@
              </div>
           </div>
           <h3 class="text-center mb-4 fw-bold text-dark">Book Appointment</h3>
-          <form method="POST" action="/receptionist/appointment">
+          <form method="POST" action="/receptionist/appointment" onsubmit="preventDoubleSubmit(event)">
             <input type="hidden" name="aadhaar" value="{{ aadhaar }}">
             <input type="hidden" name="department" value="Ophthalmology">
 
