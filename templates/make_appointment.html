@@ -91,8 +91,11 @@
     <div class="row justify-content-center">
       <div class="col-md-6 col-lg-5">
         <div class="appointment-card shadow-sm">
-          <div class="text-center">
-             <span class="info-badge">✦ Booking details for Patient</span>
+          <div class="text-center mb-3">
+             <span class="info-badge">✦ Patient Found</span>
+             <div>
+               <a href="/receptionist/pharmacy-billing?aadhaar={{ aadhaar }}" class="btn btn-outline-success btn-sm px-3 rounded-pill fw-semibold" style="font-size: 0.8rem; text-decoration: none; border-color: #10b981; color: #047857;">➔ Record Pharmacy Bill</a>
+             </div>
           </div>
           <h3 class="text-center mb-4 fw-bold text-dark">Book Appointment</h3>
           <form method="POST" action="/receptionist/appointment">
