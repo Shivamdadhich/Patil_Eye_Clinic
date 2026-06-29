@@ -231,19 +231,12 @@
               <input type="date" id="date" name="date" class="form-control glass-input" required min="{{ min_date }}">
             </div>
 
-            <!-- Clickable Slots Grid (Morning) -->
-            <div class="mb-3">
-              <label class="form-label d-block mb-2" style="font-size: 0.85rem; color: #047857; letter-spacing: 0.5px; text-transform: uppercase;">Morning Slots (10:00 AM - 02:00 PM)</label>
-              <div class="d-flex flex-wrap gap-2">
-                <button type="button" class="btn btn-slot" data-slot-value="10:00 AM - 10:30 AM" onclick="selectSlot(this, '10:00 AM - 10:30 AM')">10:00 AM</button>
-                <button type="button" class="btn btn-slot" data-slot-value="10:30 AM - 11:00 AM" onclick="selectSlot(this, '10:30 AM - 11:00 AM')">10:30 AM</button>
-                <button type="button" class="btn btn-slot" data-slot-value="11:00 AM - 11:30 AM" onclick="selectSlot(this, '11:00 AM - 11:30 AM')">11:00 AM</button>
-                <button type="button" class="btn btn-slot" data-slot-value="11:30 AM - 12:00 PM" onclick="selectSlot(this, '11:30 AM - 12:00 PM')">11:30 AM</button>
-                <button type="button" class="btn btn-slot" data-slot-value="12:00 PM - 12:30 PM" onclick="selectSlot(this, '12:00 PM - 12:30 PM')">12:00 PM</button>
-                <button type="button" class="btn btn-slot" data-slot-value="12:30 PM - 01:00 PM" onclick="selectSlot(this, '12:30 PM - 01:00 PM')">12:30 PM</button>
-                <button type="button" class="btn btn-slot" data-slot-value="01:00 PM - 01:30 PM" onclick="selectSlot(this, '01:00 PM - 01:30 PM')">01:00 PM</button>
-                <button type="button" class="btn btn-slot" data-slot-value="01:30 PM - 02:00 PM" onclick="selectSlot(this, '01:30 PM - 02:00 PM')">01:30 PM</button>
-              </div>
+            <!-- Morning Slots Notice -->
+            <div class="mb-4 p-3 bg-light rounded-3 border" style="border: 1px dashed rgba(16, 185, 129, 0.3) !important;">
+              <span class="d-block mb-1 fw-bold text-success" style="font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">Morning Consultations</span>
+              <p class="mb-0 text-muted" style="font-size: 0.88rem; line-height: 1.45;">
+                For morning slot bookings (10:00 AM - 02:00 PM), please contact the clinic directly at <strong style="color: #047857;">+91 9011772432</strong>.
+              </p>
             </div>
 
             <!-- Clickable Slots Grid (Evening) -->
