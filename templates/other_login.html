@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Login | Patil Eye Clinic</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -67,7 +68,7 @@
 <body>
     <div class="login-card">
         <div class="text-center mb-3">
-            <span id="roleEmoji" style="font-size: 2.2rem; display: inline-block; transform: scale(1.1);">⚙️</span>
+            <i id="roleIcon" class="bi bi-gear-fill text-success" style="font-size: 2.5rem;"></i>
         </div>
         <h3 class="login-title" id="loginTitle">Staff Login</h3>
         <p class="login-subtitle">Enter your credentials to access your division</p>
@@ -82,7 +83,7 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-
+ 
         <form method="POST">
             <div class="mb-3">
                 <label class="form-label fw-semibold text-success small">Username</label>
@@ -98,33 +99,37 @@
             </div>
         </form>
     </div>
-
+ 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+ 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const urlParams = new URLSearchParams(window.location.search);
             const role = urlParams.get('role');
             
             const titleElem = document.getElementById("loginTitle");
-            const emojiElem = document.getElementById("roleEmoji");
+            const iconElem = document.getElementById("roleIcon");
+            
+            iconElem.className = "bi text-success";
             
             if (role === "accounts_office") {
                 titleElem.innerText = "Accounts Office Login";
-                emojiElem.innerText = "💰";
+                iconElem.classList.add("bi-cash-stack");
                 document.title = "Accounts Office Login | Patil Eye Clinic";
             } else if (role === "room_manager") {
                 titleElem.innerText = "Room Manager Login";
-                emojiElem.innerText = "🛏️";
+                iconElem.classList.add("bi-door-open-fill");
                 document.title = "Room Manager Login | Patil Eye Clinic";
             } else if (role === "pharmacy") {
                 titleElem.innerText = "Pharmacy Login";
-                emojiElem.innerText = "💊";
+                iconElem.classList.add("bi-capsule-pill");
                 document.title = "Pharmacy Login | Patil Eye Clinic";
             } else if (role === "admin") {
                 titleElem.innerText = "System Admin Login";
-                emojiElem.innerText = "👑";
+                iconElem.classList.add("bi-shield-lock-fill");
                 document.title = "System Admin Login | Patil Eye Clinic";
+            } else {
+                iconElem.classList.add("bi-gear-fill");
             }
         });
     </script>
