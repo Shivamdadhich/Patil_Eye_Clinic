@@ -287,14 +287,35 @@ def receptionist_online_bookings_collect():
         return redirect(url_for("receptionist_login"))
     appointment_id = request.form.get("appointment_id")
     payment_method = request.form.get("payment_method", "Cash")
+    doctor = request.form.get("doctor")
+    appointment_date = request.form.get("appointment_date")
+    
+    # Robust date parsing
+    reschedule_date = None
+    if appointment_date:
+        for fmt in ('%Y-%m-%d', '%d-%m-%Y', '%Y/%m/%d', '%d/%m/%Y'):
+            try:
+                reschedule_date = datetime.strptime(appointment_date, fmt).date().isoformat()
+                break
+            except ValueError:
+                continue
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    # Update payment status
-    cursor.execute("""
-        UPDATE appointments 
-        SET payment_status = 'Paid', payment_method = %s 
-        WHERE appointment_id = %s
-    """, (payment_method, appointment_id))
+    
+    # If rescheduled or doctor changed, we update appointments table
+    if reschedule_date and doctor:
+        cursor.execute("""
+            UPDATE appointments 
+            SET payment_status = 'Paid', payment_method = %s, doctor = %s, appointment_date = %s 
+            WHERE appointment_id = %s
+        """, (payment_method, doctor, reschedule_date, appointment_id))
+    else:
+        cursor.execute("""
+            UPDATE appointments 
+            SET payment_status = 'Paid', payment_method = %s 
+            WHERE appointment_id = %s
+        """, (payment_method, appointment_id))
+        
     mysql.connection.commit()
 
     # Get appointment & patient details for receipt
