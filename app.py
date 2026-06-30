@@ -1919,16 +1919,16 @@ def admin_patients_records():
     cur.execute("""
         SELECT p.aadhaar, p.name, p.age, p.address, p.gender, 
                a.appointment_date as last_visit_date, 
-               a.reason as last_visit_reason
+               a.department as last_visit_reason
         FROM patients p
         LEFT JOIN (
-            SELECT a1.aadhaar, a1.appointment_date, a1.reason
+            SELECT a1.aadhaar, a1.appointment_date, a1.department
             FROM appointments a1
-            WHERE a1.id = (
-                SELECT a2.id 
+            WHERE a1.appointment_id = (
+                SELECT a2.appointment_id 
                 FROM appointments a2 
                 WHERE a2.aadhaar = a1.aadhaar 
-                ORDER BY a2.appointment_date DESC, a2.id DESC 
+                ORDER BY a2.appointment_date DESC, a2.appointment_id DESC 
                 LIMIT 1
             )
         ) a ON p.aadhaar = a.aadhaar
