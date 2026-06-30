@@ -1778,6 +1778,37 @@ def admin_dashboard():
             
     dept_stats = [{"department": k, "count": v} for k, v in dept_map.items()]
 
+    # 2.5 Last 7 Days Daily Visits Trend
+    import datetime
+    today_dt = get_ist_now().date()
+    last_7_days = [today_dt - datetime.timedelta(days=i) for i in range(6, -1, -1)]
+    last_7_days_str = [d.isoformat() for d in last_7_days]
+    
+    cur.execute("""
+        SELECT appointment_date, COUNT(*) as count 
+        FROM appointments 
+        WHERE appointment_date BETWEEN %s AND %s 
+        GROUP BY appointment_date
+    """, (last_7_days_str[0], last_7_days_str[-1]))
+    daily_rows = cur.fetchall()
+    
+    daily_map = {}
+    for r in daily_rows:
+        d_val = r["appointment_date"]
+        if isinstance(d_val, datetime.date):
+            d_str = d_val.isoformat()
+        else:
+            d_str = str(d_val)
+        daily_map[d_str] = r["count"]
+        
+    daily_stats = []
+    for d in last_7_days:
+        d_str = d.isoformat()
+        daily_stats.append({
+            "label": d.strftime("%d %b"),
+            "count": daily_map.get(d_str, 0)
+        })
+
     # 3. Total Lab Tests done
     cur.execute("""
         SELECT COUNT(*) as count 
@@ -1872,6 +1903,7 @@ def admin_dashboard():
                            end_date=end_date,
                            visits_count=visits_count,
                            dept_stats=dept_stats,
+                           daily_stats=daily_stats,
                            tests_count=tests_count,
                            sales_by_method=sales_by_method,
                            total_sales=total_sales,
