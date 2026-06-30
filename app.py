@@ -400,7 +400,7 @@ def search_patient():
         else:
             return redirect(url_for("register_patient", aadhaar=aadhaar))
 
-    return render_template("search_patient.html")
+    return redirect(url_for("receptionist_dashboard"))
 
 # -------------------- Register Patient --------------------
 @app.route("/receptionist/register", methods=["GET", "POST"])
