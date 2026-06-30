@@ -22,8 +22,8 @@
         }
 
         .hero-viewport {
-            min-height: 75vh;
-            height: 75vh;
+            min-height: calc(100vh - 84px);
+            height: calc(100vh - 84px);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -446,6 +446,25 @@
     </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3" style="background-color: #064e3b !important; position: relative; z-index: 10; border-bottom: 1px solid rgba(16, 185, 129, 0.15);">
+        <div class="container px-4">
+            <a class="navbar-brand d-flex align-items-center text-decoration-none" href="/">
+                <img src="/static/client_images/logo_transparent.png" alt="Patil Eye Clinic Logo" class="brand-logo-img">
+                <div class="d-flex flex-column text-start">
+                    <span class="fw-bold brand-title-text lh-1">Patil Eye Clinic</span>
+                    <span class="brand-tagline-text">Ancient In Modern Way</span>
+                </div>
+            </a>
+            <div class="ms-auto">
+                <button class="btn btn-link p-0 border-0 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
     <div class="hero-viewport">
         <!-- Background Slider Carousel -->
         <div id="heroBgCarousel" class="carousel slide carousel-fade position-absolute top-0 start-0 w-100 h-100" data-bs-ride="carousel" data-bs-interval="4500" style="z-index: 0 !important;">
@@ -468,25 +487,9 @@
             </div>
         </div>
 
-        <div style="position: relative; z-index: 2; height: 75vh; display: flex; flex-direction: column; justify-content: space-between; width: 100%;">
-            <nav class="navbar navbar-expand-lg navbar-dark glass-nav shadow-sm py-3">
-                <div class="container px-4">
-                    <a class="navbar-brand d-flex align-items-center text-decoration-none" href="/">
-                        <img src="/static/client_images/logo_transparent.png" alt="Patil Eye Clinic Logo" class="brand-logo-img">
-                        <div class="d-flex flex-column text-start">
-                            <span class="fw-bold brand-title-text lh-1">Patil Eye Clinic</span>
-                            <span class="brand-tagline-text">Ancient In Modern Way</span>
-                        </div>
-                    </a>
-                    <div class="ms-auto">
-                        <button class="btn btn-link p-0 border-0 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </nav>
+        <div style="position: relative; z-index: 2; height: calc(100vh - 84px); display: flex; flex-direction: column; justify-content: space-between; width: 100%;">
+            <!-- Spacing to push section title middle -->
+            <div></div>
 
             <div class="container my-auto">
                 <!-- Hero Section -->
