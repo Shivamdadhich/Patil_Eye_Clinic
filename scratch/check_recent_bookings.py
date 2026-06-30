@@ -20,11 +20,13 @@ try:
         ssl={"min_version": "TLSv1.2"} if host not in ("localhost", "127.0.0.1") else None,
         autocommit=True
     )
-    cursor = conn.cursor()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     
-    print("Updating appointment 90001 to Pending...")
-    cursor.execute("UPDATE appointments SET payment_status = 'Pending' WHERE appointment_id = 90001")
-    print("Updated!")
+    print("Checking pending appointments in DB...")
+    cursor.execute("SELECT * FROM appointments ORDER BY appointment_id DESC LIMIT 10")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
         
     cursor.close()
     conn.close()

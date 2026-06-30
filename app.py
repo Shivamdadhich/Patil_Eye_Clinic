@@ -677,8 +677,8 @@ def patient_book_details():
             return f"Error: No patient found with Aadhaar {aadhaar}"
 
         cursor.execute("""
-            INSERT INTO appointments (aadhaar, department, doctor, appointment_date, amount, payment_method, time_slot)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO appointments (aadhaar, department, doctor, appointment_date, amount, payment_method, time_slot, payment_status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, 'Pending')
         """, (aadhaar, department, doctor, appointment_date, amount_val, payment_method, time_slot))
         mysql.connection.commit()
         cursor.close()
