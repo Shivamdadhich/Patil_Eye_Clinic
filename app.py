@@ -1909,6 +1909,36 @@ def admin_dashboard():
                            total_sales=total_sales,
                            all_txns=all_txns)
 
+# -------------------- Admin Patient Records Directory --------------------
+@app.route("/admin/patients-records")
+def admin_patients_records():
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+        
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute("""
+        SELECT p.aadhaar, p.name, p.age, p.address, p.gender, 
+               a.appointment_date as last_visit_date, 
+               a.reason as last_visit_reason
+        FROM patients p
+        LEFT JOIN (
+            SELECT a1.aadhaar, a1.appointment_date, a1.reason
+            FROM appointments a1
+            WHERE a1.id = (
+                SELECT a2.id 
+                FROM appointments a2 
+                WHERE a2.aadhaar = a1.aadhaar 
+                ORDER BY a2.appointment_date DESC, a2.id DESC 
+                LIMIT 1
+            )
+        ) a ON p.aadhaar = a.aadhaar
+        ORDER BY p.name ASC
+    """)
+    patients_list = cur.fetchall()
+    cur.close()
+    
+    return render_template("patients_records.html", patients=patients_list)
+
 # -------------------- Accounts Office Dashboard --------------------
 @app.route("/accounts_office/dashboard")
 def accounts_office_dashboard():
