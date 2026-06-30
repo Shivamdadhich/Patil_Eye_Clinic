@@ -115,17 +115,24 @@
           <tbody>
             {% for booking in bookings %}
               <tr>
-                <td><strong>{{ booking.patient_name }}</strong></td>
-                <td><code style="color: #047857;">{{ booking.aadhaar }}</code></td>
-                <td>{{ booking.doctor }}</td>
-                <td>
-                  <span class="d-block fw-semibold">{{ booking.appointment_date }}</span>
-                  <small class="text-muted">{{ booking.time_slot }}</small>
-                </td>
-                <td>₹{{ booking.amount }}</td>
-                <td><span class="badge-pending">Pending</span></td>
                 <form method="POST" action="/receptionist/online-bookings/collect">
                   <input type="hidden" name="appointment_id" value="{{ booking.appointment_id }}">
+                  <td><strong>{{ booking.patient_name }}</strong></td>
+                  <td><code style="color: #047857;">{{ booking.aadhaar }}</code></td>
+                  <td>
+                    <select name="doctor" class="form-select form-select-sm" style="max-width: 180px; border-radius: 8px; border: 1.5px solid rgba(16, 185, 129, 0.25); font-size: 0.88rem; font-weight: 600; color: #064e3b;" required>
+                      <option value="Dr. Prajakta Patil" {% if booking.doctor == "Dr. Prajakta Patil" %}selected{% endif %}>Dr. Prajakta Patil</option>
+                      <option value="Dr. Darshan Dhage" {% if booking.doctor == "Dr. Darshan Dhage" %}selected{% endif %}>Dr. Darshan Dhage</option>
+                      <option value="Dr. Shradha Pandagale" {% if booking.doctor == "Dr. Shradha Pandagale" %}selected{% endif %}>Dr. Shradha Pandagale</option>
+                      <option value="Dr. Vaishali Oak" {% if booking.doctor == "Dr. Vaishali Oak" %}selected{% endif %}>Dr. Vaishali Oak</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="date" name="appointment_date" value="{{ booking.appointment_date }}" class="form-control form-control-sm" style="max-width: 140px; border-radius: 8px; border: 1.5px solid rgba(16, 185, 129, 0.25); font-size: 0.88rem; font-weight: 600; color: #064e3b;" required>
+                    <small class="text-muted d-block mt-1">Slot: {{ booking.time_slot }}</small>
+                  </td>
+                  <td>₹{{ booking.amount }}</td>
+                  <td><span class="badge-pending">Pending</span></td>
                   <td>
                     <select name="payment_method" class="glass-select" required>
                       <option value="Cash">Cash</option>
@@ -134,8 +141,8 @@
                     </select>
                   </td>
                   <td>
-                    <button type="submit" class="btn btn-action btn-success">
-                      Collect Fee & Print
+                    <button type="submit" class="btn btn-action btn-success py-2 px-3 fw-semibold text-nowrap" style="font-size: 0.82rem;">
+                      Collect & Print ➔
                     </button>
                   </td>
                 </form>
