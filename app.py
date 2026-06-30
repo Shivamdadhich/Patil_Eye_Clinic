@@ -841,7 +841,7 @@ def doctor_dashboard():
             }
 
             cur.execute("""
-                SELECT visit_date, diagnosis, prescription, advised_tests, doctor_name, history_id, prescription_image_name
+                SELECT visit_date, diagnosis, prescription, advised_tests, doctor_name, history_id, prescription_image_name, remarks, follow_up_date
                 FROM patient_history WHERE aadhaar = %s
                 ORDER BY visit_date DESC, history_id DESC
             """, (aadhaar,))
@@ -853,7 +853,9 @@ def doctor_dashboard():
                     "advised_tests": h[3],
                     "doctor_name": h[4],
                     "history_id": h[5],
-                    "prescription_image_name": h[6]
+                    "prescription_image_name": h[6],
+                    "remarks": h[7],
+                    "follow_up_date": h[8]
                 }
                 for h in cur.fetchall()
             ]
@@ -900,6 +902,10 @@ def save_history():
     prescription = request.form.get("prescription")
     tests = request.form.get("tests")
     scan_token = request.form.get("scan_token")
+    remarks = request.form.get("remarks")
+    follow_up_date = request.form.get("follow_up_date")
+    if not follow_up_date:
+        follow_up_date = None
     visit_date = get_ist_now().strftime("%Y-%m-%d")
 
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -907,9 +913,9 @@ def save_history():
     
     # Save base history entry
     cur.execute("""
-        INSERT INTO patient_history (aadhaar, visit_date, diagnosis, prescription, advised_tests, doctor_name, prescription_image, prescription_image_name)
-        VALUES (%s, %s, %s, %s, %s, %s, NULL, NULL)
-    """, (aadhaar, visit_date, diagnosis, prescription, tests, doctor_name))
+        INSERT INTO patient_history (aadhaar, visit_date, diagnosis, prescription, advised_tests, doctor_name, prescription_image, prescription_image_name, remarks, follow_up_date)
+        VALUES (%s, %s, %s, %s, %s, %s, NULL, NULL, %s, %s)
+    """, (aadhaar, visit_date, diagnosis, prescription, tests, doctor_name, remarks, follow_up_date))
     
     cur.execute("SELECT LAST_INSERT_ID() as new_id")
     insert_row = cur.fetchone()

@@ -147,16 +147,19 @@
                               </div>
                           </div>
 
-                          <div class="mb-4 position-relative">
-                              <label class="form-label">Advise Lab Tests</label>
-                              <input type="text" id="testSearchInput" class="form-control glass-input" placeholder="Search tests (e.g. CBC, Lipid, Liver)..." autocomplete="off">
-                              <div id="suggestionsList" class="list-group position-absolute w-100 shadow" style="z-index: 1050; max-height: 200px; overflow-y: auto; display: none; background: white;"></div>
-                              <div id="selectedTestsContainer" class="mt-2 d-flex flex-wrap gap-2"></div>
-                              <input type="hidden" name="tests" id="testsHiddenInput">
-                          </div>
-                          <button class="btn btn-action btn-success px-4">Save & Complete Session</button>
-                      </form>
-                  </div>
+                          <div class="row mb-4">
+                               <div class="col-md-6">
+                                   <label class="form-label">Follow-up Date</label>
+                                   <input type="date" name="follow_up_date" class="form-control glass-input">
+                               </div>
+                               <div class="col-md-6">
+                                   <label class="form-label">Remarks / Advice (if any)</label>
+                                   <input type="text" name="remarks" class="form-control glass-input" placeholder="Enter follow-up instructions or comments...">
+                               </div>
+                           </div>
+                           <button class="btn btn-action btn-success px-4">Save & Complete Session</button>
+                       </form>
+                   </div>
 
                   <!-- Patient History -->
                   <div class="main-card">
@@ -169,7 +172,8 @@
                                           <th>Date</th>
                                           <th>Reason / Diagnosis</th>
                                           <th>Prescription</th>
-                                          <th>Advised Tests</th>
+                                          <th>Follow-up Date</th>
+                                          <th>Remarks</th>
                                           <th>Physician</th>
                                       </tr>
                                   </thead>
@@ -189,8 +193,15 @@
                                                   {% endif %}
                                               </td>
                                               <td>
-                                                  {% if h.advised_tests %}
-                                                      <span class="badge bg-warning text-dark">{{ h.advised_tests }}</span>
+                                                  {% if h.follow_up_date %}
+                                                      <span class="badge bg-info text-dark">{{ h.follow_up_date }}</span>
+                                                  {% else %}
+                                                      <span class="text-muted">-</span>
+                                                  {% endif %}
+                                              </td>
+                                              <td>
+                                                  {% if h.remarks %}
+                                                      <span class="text-secondary small">{{ h.remarks }}</span>
                                                   {% else %}
                                                       <span class="text-muted">-</span>
                                                   {% endif %}
