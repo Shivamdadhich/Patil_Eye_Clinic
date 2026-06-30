@@ -22,33 +22,13 @@
         }
 
         .hero-viewport {
-            animation: slideBg 25s infinite;
-            background-size: cover !important;
-            background-position: center center !important;
-            background-repeat: no-repeat !important;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
-        }
-
-        @keyframes slideBg {
-            0%, 18% {
-                background-image: url("{{ url_for('static', filename='clinic_entry.jpeg') }}");
-            }
-            20%, 38% {
-                background-image: url("{{ url_for('static', filename='clinic_slide1.jpeg') }}");
-            }
-            40%, 58% {
-                background-image: url("{{ url_for('static', filename='clinic_slide2.jpeg') }}");
-            }
-            60%, 78% {
-                background-image: url("{{ url_for('static', filename='clinic_slide3.jpeg') }}");
-            }
-            80%, 100% {
-                background-image: url("{{ url_for('static', filename='clinic_slide4.jpeg') }}");
-            }
+            overflow: hidden;
+            background-color: #000000;
         }
         .hero-viewport::before {
             content: '';
@@ -466,40 +446,63 @@
 </head>
 <body>
     <div class="hero-viewport">
-        <nav class="navbar navbar-expand-lg navbar-dark glass-nav shadow-sm py-3">
-            <div class="container px-4">
-                <a class="navbar-brand d-flex align-items-center text-decoration-none" href="/">
-                    <img src="/static/client_images/logo_transparent.png" alt="Patil Eye Clinic Logo" class="brand-logo-img">
-                    <div class="d-flex flex-column text-start">
-                        <span class="fw-bold brand-title-text lh-1">Patil Eye Clinic</span>
-                        <span class="brand-tagline-text">Ancient In Modern Way</span>
-                    </div>
-                </a>
-                <div class="ms-auto">
-                    <button class="btn btn-link p-0 border-0 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-                        </svg>
-                    </button>
+        <!-- Background Slider Carousel -->
+        <div id="heroBgCarousel" class="carousel slide carousel-fade position-absolute top-0 start-0 w-100 h-100" data-bs-ride="carousel" data-bs-interval="4500" style="z-index: 0 !important;">
+            <div class="carousel-inner h-100">
+                <div class="carousel-item active h-100">
+                    <div class="w-100 h-100" style="background-image: url('{{ url_for('static', filename='clinic_entry.jpeg') }}'); background-size: cover; background-position: center;"></div>
                 </div>
-            </div>
-        </nav>
-
-        <div class="container my-auto">
-            <!-- Hero Section -->
-            <div class="hero-section">
-                <div class="hero-badge">
-                    Healthcare Redefined & Simplified
+                <div class="carousel-item h-100">
+                    <div class="w-100 h-100" style="background-image: url('{{ url_for('static', filename='clinic_slide1.jpeg') }}'); background-size: cover; background-position: center;"></div>
                 </div>
-                <h1 class="hero-title">Welcome to <span>Patil Eye Clinic</span></h1>
-                <p class="hero-subtitle">Access doctor schedules, patient reports, and manage appointment details instantly with Patil Eye Clinic's modern clinic ecosystem.</p>
-                <div class="mt-4" style="animation: bounce 2s infinite; font-size: 0.95rem; color: #a7f3d0; font-weight: 600; cursor: pointer; text-shadow: 0 2px 8px rgba(0,0,0,0.5);" onclick="document.getElementById('portals-section').scrollIntoView({behavior: 'smooth'});">
-                    Scroll Down for Portals & Timings
+                <div class="carousel-item h-100">
+                    <div class="w-100 h-100" style="background-image: url('{{ url_for('static', filename='clinic_slide2.jpeg') }}'); background-size: cover; background-position: center;"></div>
+                </div>
+                <div class="carousel-item h-100">
+                    <div class="w-100 h-100" style="background-image: url('{{ url_for('static', filename='clinic_slide3.jpeg') }}'); background-size: cover; background-position: center;"></div>
+                </div>
+                <div class="carousel-item h-100">
+                    <div class="w-100 h-100" style="background-image: url('{{ url_for('static', filename='clinic_slide4.jpeg') }}'); background-size: cover; background-position: center;"></div>
                 </div>
             </div>
         </div>
-        <!-- spacing div to balance the bottom of the flex layout -->
-        <div></div>
+
+        <div style="position: relative; z-index: 2; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; width: 100%;">
+            <nav class="navbar navbar-expand-lg navbar-dark glass-nav shadow-sm py-3">
+                <div class="container px-4">
+                    <a class="navbar-brand d-flex align-items-center text-decoration-none" href="/">
+                        <img src="/static/client_images/logo_transparent.png" alt="Patil Eye Clinic Logo" class="brand-logo-img">
+                        <div class="d-flex flex-column text-start">
+                            <span class="fw-bold brand-title-text lh-1">Patil Eye Clinic</span>
+                            <span class="brand-tagline-text">Ancient In Modern Way</span>
+                        </div>
+                    </a>
+                    <div class="ms-auto">
+                        <button class="btn btn-link p-0 border-0 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container my-auto">
+                <!-- Hero Section -->
+                <div class="hero-section">
+                    <div class="hero-badge">
+                        Healthcare Redefined & Simplified
+                    </div>
+                    <h1 class="hero-title">Welcome to <span>Patil Eye Clinic</span></h1>
+                    <p class="hero-subtitle">Access doctor schedules, patient reports, and manage appointment details instantly with Patil Eye Clinic's modern clinic ecosystem.</p>
+                    <div class="mt-4" style="animation: bounce 2s infinite; font-size: 0.95rem; color: #a7f3d0; font-weight: 600; cursor: pointer; text-shadow: 0 2px 8px rgba(0,0,0,0.5);" onclick="document.getElementById('portals-section').scrollIntoView({behavior: 'smooth'});">
+                        Scroll Down for Portals & Timings
+                    </div>
+                </div>
+            </div>
+            <!-- spacing div to balance the bottom of the flex layout -->
+            <div></div>
+        </div>
     </div>
 
     <!-- Content fold below the fold -->
