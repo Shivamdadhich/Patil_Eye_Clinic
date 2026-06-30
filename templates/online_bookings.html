@@ -76,6 +76,52 @@
           outline: none;
       }
   </style>
+  <script>
+    async function submitCollectPayment(event, form) {
+      event.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = 'Collecting...';
+      
+      const formData = new FormData(form);
+      try {
+        const response = await fetch('/api/collect-payment', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+          submitBtn.innerHTML = 'Collected ✓';
+          submitBtn.className = 'btn btn-secondary py-2 px-3 fw-semibold text-nowrap disabled';
+          // Find status badge and change to Paid
+          const row = form.closest('tr');
+          const statusBadge = row.querySelector('.badge-pending');
+          if (statusBadge) {
+            statusBadge.className = 'badge-paid';
+            statusBadge.innerHTML = 'Paid';
+            statusBadge.style.background = '#d1fae5';
+            statusBadge.style.color = '#065f46';
+            statusBadge.style.border = '1px solid #a7f3d0';
+            statusBadge.style.padding = '4px 10px';
+            statusBadge.style.borderRadius = '12px';
+            statusBadge.style.fontWeight = '600';
+            statusBadge.style.fontSize = '0.8rem';
+          }
+        } else {
+          alert("Error collecting payment: " + data.message);
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Collect';
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Network error. Please try again.");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Collect';
+      }
+    }
+  </script>
 </head>
 <body>
   <div class="container">
@@ -115,7 +161,7 @@
           <tbody>
             {% for booking in bookings %}
               <tr>
-                <form method="POST" action="/receptionist/online-bookings/collect">
+                <form method="POST" onsubmit="submitCollectPayment(event, this)">
                   <input type="hidden" name="appointment_id" value="{{ booking.appointment_id }}">
                   <td><strong>{{ booking.patient_name }}</strong></td>
                   <td><code style="color: #047857;">{{ booking.aadhaar }}</code></td>
@@ -142,7 +188,7 @@
                   </td>
                   <td>
                     <button type="submit" class="btn btn-action btn-success py-2 px-3 fw-semibold text-nowrap" style="font-size: 0.82rem;">
-                      Collect & Print ➔
+                      Collect
                     </button>
                   </td>
                 </form>
