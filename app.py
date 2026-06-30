@@ -131,8 +131,8 @@ def send_reset_email(to_email, otp):
 
     smtp_server = "smtp.gmail.com"
     port = 587
-    sender_email = os.getenv("SMTP_EMAIL", "testingwebappshivam@gmail.com")
-    sender_password = os.getenv("SMTP_PASSWORD", "xszj pfwm jfsx hykg")
+    sender_email = os.getenv("SMTP_EMAIL", "patileyecare06@gmail.com")
+    sender_password = os.getenv("SMTP_PASSWORD", "qnnydfnsftgvzokx")
     
     message = MIMEMultipart()
     message["From"] = f"Patil Eye Clinic <{sender_email}>"
