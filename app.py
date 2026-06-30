@@ -270,13 +270,14 @@ def receptionist_logout():
 def receptionist_online_bookings():
     if not session.get("receptionist_logged_in"):
         return redirect(url_for("receptionist_login"))
+    today_str = get_ist_now().date().isoformat()
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("""
         SELECT a.*, p.name as patient_name FROM appointments a 
         JOIN patients p ON a.aadhaar = p.aadhaar 
-        WHERE a.payment_status = 'Pending' 
+        WHERE a.payment_status = 'Pending' AND a.appointment_date >= %s
         ORDER BY a.appointment_date DESC
-    """)
+    """, (today_str,))
     bookings = cursor.fetchall()
     cursor.close()
     return render_template("online_bookings.html", bookings=bookings)
@@ -867,13 +868,13 @@ def doctor_dashboard():
                 for r in cur.fetchall()
             ]
 
-    # Fetch doctor's assigned patients (recent 20) from appointments
+    # Fetch doctor's assigned patients (recent 20) from appointments (Only showing paid visits)
     doctor_name = session.get("doctor_name")
     cur.execute("""
         SELECT p.name, p.aadhaar
         FROM appointments a
         JOIN patients p ON a.aadhaar = p.aadhaar
-        WHERE a.doctor = %s
+        WHERE a.doctor = %s AND a.payment_status = 'Paid'
         GROUP BY p.name, p.aadhaar
         ORDER BY MAX(a.appointment_date) DESC
         LIMIT 20
