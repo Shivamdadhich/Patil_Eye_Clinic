@@ -111,19 +111,49 @@
             height: 10px; 
             border-radius: 50%;
         }
+        .brand-logo-img {
+            height: 48px;
+            width: auto;
+            margin-right: 12px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+            transition: all 0.3s ease;
+        }
+        .brand-title-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        .brand-tagline-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            font-size: 0.55rem;
+            letter-spacing: 4px;
+            color: rgba(255, 255, 255, 0.95);
+            text-transform: uppercase;
+            margin-top: 4px;
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Subtle Top Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light sticky-top py-2 mb-3">
+    <!-- Solid Brand Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3 mb-4" style="background-color: #064e3b !important; border-bottom: 1px solid rgba(16, 185, 129, 0.15);">
         <div class="container-fluid px-4">
-            <span class="navbar-brand fw-bold d-flex align-items-center" style="font-family: 'Outfit', sans-serif; color: #0f172a; font-size: 1.25rem;">
-                <span class="me-2" style="color: #10b981; font-size: 1.5rem;">✚</span> Patil Eye Clinic
-            </span>
-            <div class="d-flex align-items-center gap-3">
+            <a class="navbar-brand d-flex align-items-center text-decoration-none" href="/">
+                <img src="/static/client_images/logo_transparent.png" alt="Patil Eye Clinic Logo" class="brand-logo-img">
+                <div class="d-flex flex-column text-start">
+                    <span class="fw-bold brand-title-text lh-1">Patil Eye Clinic</span>
+                    <span class="brand-tagline-text">Ancient In Modern Way</span>
+                </div>
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-3">
                 <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill fw-semibold" style="font-size: 0.75rem;">System Admin</span>
-                <a href="/admin/logout" class="btn btn-outline-danger btn-sm px-3 rounded-pill fw-semibold" style="font-size: 0.75rem; padding: 4px 12px;">Logout</a>
+                <a href="/admin/logout" class="btn btn-outline-light btn-sm px-3 rounded-pill fw-semibold" style="font-size: 0.75rem; padding: 4px 12px;">Logout</a>
             </div>
         </div>
     </nav>
@@ -164,7 +194,7 @@
                         <div class="metric-label">Total Revenue</div>
                         <div class="metric-value">₹{{ "{:,.2f}".format(total_sales) }}</div>
                     </div>
-                    <div class="metric-icon">💰</div>
+                    <div class="metric-icon" style="color: #059669;"><i class="bi bi-wallet2" style="font-size: 1.8rem;"></i></div>
                 </div>
             </div>
             <!-- Metric 2: Patient Visits -->
@@ -174,7 +204,7 @@
                         <div class="metric-label">OPD Visits</div>
                         <div class="metric-value">{{ visits_count }}</div>
                     </div>
-                    <div class="metric-icon">👥</div>
+                    <div class="metric-icon" style="color: #059669;"><i class="bi bi-people" style="font-size: 1.8rem;"></i></div>
                 </div>
             </div>
             <!-- Metric 3: Lab Tests Done -->
@@ -184,7 +214,7 @@
                         <div class="metric-label">Lab Tests</div>
                         <div class="metric-value">{{ tests_count }}</div>
                     </div>
-                    <div class="metric-icon">🧪</div>
+                    <div class="metric-icon" style="color: #059669;"><i class="bi bi-activity" style="font-size: 1.8rem;"></i></div>
                 </div>
             </div>
         </div>
@@ -194,7 +224,7 @@
             <!-- Left: Department Visits Bar Chart -->
             <div class="col-lg-8">
                 <div class="main-card h-100">
-                    <h6 class="mb-3 fw-bold text-secondary" style="font-family: 'Outfit', sans-serif;">📊 Patient Visits Trend (Last 7 Days)</h6>
+                    <h6 class="mb-3 fw-bold text-secondary" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-graph-up-arrow me-2" style="color: #059669;"></i> Patient Visits Trend (Last 7 Days)</h6>
                     <div class="chart-container" style="height: 380px;">
                         <canvas id="trendChart"></canvas>
                     </div>
@@ -203,7 +233,7 @@
             <!-- Right: Payment Methods Donut Chart + Sizable Breakdown Info -->
             <div class="col-lg-4">
                 <div class="main-card h-100">
-                    <h6 class="mb-3 fw-bold text-secondary" style="font-family: 'Outfit', sans-serif;">💳 Payment Modes & Distribution</h6>
+                    <h6 class="mb-3 fw-bold text-secondary" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-credit-card me-2" style="color: #059669;"></i> Payment Modes & Distribution</h6>
                     <div class="chart-container" style="height: 160px; display: flex; align-items: center; justify-content: center;">
                         <canvas id="paymentChart"></canvas>
                     </div>
@@ -233,7 +263,7 @@
 
         <!-- Details Transactions Table (Subtle Grid) -->
         <div class="main-card">
-            <h6 class="mb-3 fw-bold text-secondary" style="font-family: 'Outfit', sans-serif;">💸 Detailed Transactions Log</h6>
+            <h6 class="mb-3 fw-bold text-secondary" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-receipt me-2" style="color: #059669;"></i> Detailed Transactions Log</h6>
             {% if all_txns %}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
