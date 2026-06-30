@@ -1480,26 +1480,37 @@ def api_upload_mobile(token):
     if not files or all(f.filename == "" for f in files):
         return "<h3>Error: No files uploaded</h3>", 400
         
-    cur = mysql.connection.cursor()
+    from concurrent.futures import ThreadPoolExecutor
+    
+    def upload_one_file(file_info):
+        file_name, file_data = file_info
+        cloudinary_url = upload_to_cloudinary(file_name, file_data, folder="prescriptions")
+        return file_name, cloudinary_url
+
+    file_list = []
     for file in files:
         if file.filename != "":
-            file_name = file.filename
-            file_data = file.read()
-            # Upload to Cloudinary and get URL
-            cloudinary_url = upload_to_cloudinary(file_name, file_data, folder="prescriptions")
+            file_list.append((file.filename, file.read()))
+
+    if file_list:
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            results = list(executor.map(upload_one_file, file_list))
+            
+        cur = mysql.connection.cursor()
+        for file_name, cloudinary_url in results:
             if cloudinary_url:
                 cur.execute("""
                     INSERT INTO prescription_scan_session_files (token, file_name, file_data)
                     VALUES (%s, %s, %s)
                 """, (token, file_name, cloudinary_url))
             
-    cur.execute("""
-        UPDATE prescription_scan_sessions 
-        SET status = 'uploaded'
-        WHERE token = %s
-    """, (token,))
-    mysql.connection.commit()
-    cur.close()
+        cur.execute("""
+            UPDATE prescription_scan_sessions 
+            SET status = 'uploaded'
+            WHERE token = %s
+        """, (token,))
+        mysql.connection.commit()
+        cur.close()
     
     return """
         <div style='text-align: center; font-family: sans-serif; padding-top: 50px; color: #047857;'>
