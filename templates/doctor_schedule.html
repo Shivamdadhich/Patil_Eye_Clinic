@@ -4,76 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Directory & Schedule | Patil Eye Clinic</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     {% include 'theme_style.html' %}
     <style>
         body {
-            font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #ffffff !important;
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
         }
-        .maintenance-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
+        .glass-nav {
+            background: rgba(6, 78, 59, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
         }
-        .maintenance-icon {
-            font-size: 3.5rem;
-            color: #10b981;
-            margin-bottom: 20px;
-            display: inline-block;
-            animation: wrench 2.5s ease-in-out infinite;
+        .navbar-brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
         }
-        @keyframes wrench {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(20deg); }
-        }
-        .btn-home {
-            background: #10b981;
-            color: #ffffff;
-            font-weight: 600;
-            border-radius: 12px;
-            padding: 12px 28px;
+        .btn-custom-green {
+            background: #09A372 !important;
+            color: #ffffff !important;
             border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 12px 30px;
+            box-shadow: 0 4px 14px rgba(9, 163, 114, 0.2);
             transition: all 0.2s ease;
         }
-        .btn-home:hover {
-            background: #059669;
-            color: #ffffff;
+        .btn-custom-green:hover {
+            background: #05855c !important;
             transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(9, 163, 114, 0.3);
         }
     </style>
 </head>
 <body>
 
-    <div class="maintenance-card">
-        <div class="maintenance-icon">
-            <i class="bi bi-tools"></i>
-        </div>
-        <h3 class="fw-bold mb-3" style="color: #10b981;">Schedule Directory Under Maintenance</h3>
-        <p class="text-secondary mb-4" style="font-size: 0.95rem; line-height: 1.6;">
-            We are currently calibrating doctor consultation hours and calendar slots for the upcoming session. This directory will be fully active soon.
-        </p>
-        <div class="alert alert-info py-2 px-3 border-0 bg-opacity-10 text-info small mb-4" style="background-color: rgba(59, 130, 246, 0.1); border-radius: 10px;">
-            <i class="bi bi-info-circle me-1"></i> Sorry for the inconvenience caused.
-        </div>
-        <div>
-            <a href="/" class="btn btn-home px-4">
-                <i class="bi bi-arrow-left me-2"></i> Back to Home
+    <nav class="navbar navbar-expand-lg navbar-dark glass-nav mb-4 shadow-sm">
+        <div class="container-fluid px-4 py-2">
+            <a class="navbar-brand fw-bold d-flex align-items-center text-white text-decoration-none" href="/">
+                <span style="color: #34d399; margin-right: 8px;">✚</span> Patil Eye Clinic
             </a>
+            <div class="ms-auto">
+                <a href="/" class="btn btn-outline-light btn-sm px-3 rounded-pill">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5 my-5">
+        <div class="row align-items-center justify-content-center text-center">
+            <div class="col-lg-6">
+                <div class="mb-4">
+                    <i class="bi bi-calendar-range text-success" style="font-size: 5rem; opacity: 0.85; color: #09A372 !important;"></i>
+                </div>
+                <h2 class="fw-bold mb-3" style="color: #064e3b; font-family: 'Outfit', sans-serif; font-size: 2.2rem;">Doctor Schedules & Directory</h2>
+                <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.7; max-width: 500px; margin: 0 auto;">
+                    We are updating our medical directories and consultant timings. The doctor consultation rosters and booking calendar will be active here shortly.
+                </p>
+                <div class="alert alert-info py-2 px-3 border-0 bg-opacity-10 text-success small mb-4" style="background-color: rgba(9, 163, 114, 0.08); border-radius: 10px; color: #064e3b !important; max-width: 400px; margin: 0 auto 24px auto;">
+                    <i class="bi bi-info-circle me-1"></i> Sorry for the inconvenience caused.
+                </div>
+                <div>
+                    <a href="/" class="btn btn-custom-green px-4 py-3">
+                        <i class="bi-arrow-left me-2"></i> Go Back to Home Page
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
