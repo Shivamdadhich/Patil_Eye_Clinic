@@ -128,7 +128,7 @@
                   <!-- Add Today's Data -->
                   <div class="main-card">
                       <h4 class="section-title">Add Diagnosis & Treatment</h4>
-                      <form method="POST" action="{{ url_for('save_history') }}">
+                      <form method="POST" action="{{ url_for('save_history') }}" onsubmit="return validateDoctorForm(event)">
                           <input type="hidden" name="aadhaar" value="{{ patient.aadhaar }}">
                           <input type="hidden" name="scan_token" id="scan_token_input">
                           <div class="mb-3">
@@ -536,6 +536,7 @@ function openPrescriptionScanner() {
             .then(statusData => {
                 if (statusData.status === 'uploaded') {
                     clearInterval(pollInterval);
+                    isPrescriptionUploaded = true;
                     statusText.innerHTML = `<span class="fs-4 text-success me-2">✓</span> Successfully Synced!`;
                     statusText.className = "text-success fw-bold d-flex align-items-center justify-content-center";
                     
@@ -553,6 +554,17 @@ function openPrescriptionScanner() {
         console.error("Error requesting scan token:", err);
         alert("Failed to initialize scanner. Please try again.");
     });
+}
+
+let isPrescriptionUploaded = false;
+
+function validateDoctorForm(event) {
+    if (!isPrescriptionUploaded) {
+        alert("Mandatory Verification: Please upload the prescription receipt (via mobile scanner) before completing the session.");
+        event.preventDefault();
+        return false;
+    }
+    return true;
 }
 </script>
 </body>
