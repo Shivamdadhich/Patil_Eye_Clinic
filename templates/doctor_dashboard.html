@@ -174,7 +174,7 @@
                                           <th>Prescription</th>
                                           <th>Follow-up Date</th>
                                           <th>Remarks</th>
-                                          <th>Physician</th>
+                                          <th>Doctor's Name</th>
                                       </tr>
                                   </thead>
                                   <tbody>
@@ -183,13 +183,15 @@
                                               <td><span class="text-nowrap fw-semibold">{{ h.visit_date }}</span></td>
                                               <td>{{ h.diagnosis }}</td>
                                               <td>
-                                                  <code class="text-dark">{{ h.prescription or 'None' }}</code>
-                                                  {% if h.prescription_image_name %}
-                                                      <div class="mt-1">
-                                                          <button type="button" class="btn btn-sm btn-link text-success p-0 d-inline-flex align-items-center gap-1" style="font-size: 0.85rem;" onclick="viewReportModal('{{ url_for('serve_prescription_image', history_id=h.history_id) }}', 'Receipt: {{ h.prescription_image_name }}')">
-                                                              📄 View Receipt
-                                                          </button>
-                                                      </div>
+                                                  {% if h.prescription_image %}
+                                                      <a href="{{ url_for('serve_prescription_image', history_id=h.history_id) }}" target="_blank" class="text-success fw-semibold text-decoration-none d-inline-flex align-items-center gap-1">
+                                                          📄 View Prescription
+                                                      </a>
+                                                  {% else %}
+                                                      <span class="text-muted">No Receipt</span>
+                                                  {% endif %}
+                                                  {% if h.prescription and h.prescription != 'None' %}
+                                                      <div class="small text-muted mt-1">{{ h.prescription }}</div>
                                                   {% endif %}
                                               </td>
                                               <td>
