@@ -183,7 +183,7 @@
                                               <td><span class="text-nowrap fw-semibold">{{ h.visit_date }}</span></td>
                                               <td>{{ h.diagnosis }}</td>
                                               <td>
-                                                  {% if h.prescription_image %}
+                                                  {% if h.prescription_image_name %}
                                                       <a href="{{ url_for('serve_prescription_image', history_id=h.history_id) }}" target="_blank" class="text-success fw-semibold text-decoration-none d-inline-flex align-items-center gap-1">
                                                           📄 View Prescription
                                                       </a>
