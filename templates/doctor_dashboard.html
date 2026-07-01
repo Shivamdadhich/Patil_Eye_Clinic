@@ -136,21 +136,17 @@
                               <textarea class="form-control glass-input" name="diagnosis" rows="2" placeholder="Describe symptoms, assessment, diagnosis details..." required></textarea>
                           </div>
                           
-                          <!-- Mobile QR / Direct Upload widget -->
-                          <div class="mb-4 p-3 border rounded-3 bg-light">
-                              <label class="form-label mb-2 fw-semibold text-dark"><i class="bi bi-camera"></i> Prescription Receipt (Required)</label>
-                              <div class="row g-3 align-items-center">
-                                  <div class="col-md-6 border-md-end pe-md-3">
-                                      <label class="form-label small text-muted mb-1">Option A: Take Photo / Choose File (Direct upload for iPad/Tablets)</label>
-                                      <input type="file" name="direct_prescription" id="direct_prescription" class="form-control form-control-sm glass-input" accept="image/*" capture="environment" onchange="handleDirectFileChange()">
-                                  </div>
-                                  <div class="col-md-6 ps-md-3">
-                                      <label class="form-label small text-muted mb-1">Option B: Scan via QR Code (Mobile camera scanner)</label>
-                                      <div class="d-flex align-items-center justify-content-between gap-2">
-                                          <span class="text-muted small lh-sm" id="scan_status_text" style="font-size: 0.8rem;">No mobile upload tracked yet.</span>
-                                          <button type="button" class="btn btn-sm btn-outline-success px-3 text-nowrap" onclick="openPrescriptionScanner()"><i class="bi bi-qr-code-scan"></i> Scan via QR</button>
-                                      </div>
-                                  </div>
+                          <!-- Mobile QR scan / click img widget -->
+                          <div class="mb-3 p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between flex-wrap gap-3">
+                              <div style="flex: 1; min-width: 250px;">
+                                  <label class="form-label mb-1 fw-bold text-dark">Prescription Receipt Upload (Via Mobile Scanner)</label>
+                                  <p class="text-muted small mb-0" id="scan_status_text">Click to generate a QR code, scan with your phone, and capture the receipt using your camera.</p>
+                              </div>
+                              <div class="d-flex align-items-center gap-2 flex-wrap">
+                                  <button type="button" class="btn btn-sm btn-outline-success px-3" onclick="openPrescriptionScanner()">📸 Scan Prescription Receipt</button>
+                                  <span class="text-muted small">or</span>
+                                  <input type="file" name="direct_prescription" id="direct_prescription" accept="image/*" capture="environment" style="display: none;" onchange="handleDirectFileChange()">
+                                  <button type="button" class="btn btn-sm btn-outline-primary px-3" onclick="document.getElementById('direct_prescription').click()">📁 Click Image / Upload</button>
                               </div>
                           </div>
 
