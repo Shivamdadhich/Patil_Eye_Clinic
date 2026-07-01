@@ -1924,21 +1924,11 @@ def admin_patients_records():
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.execute("""
         SELECT p.aadhaar, p.name, p.age, p.address, p.gender, 
-               a.appointment_date as last_visit_date, 
-               a.department as last_visit_reason
+               h.visit_date as last_visit_date, 
+               h.diagnosis as last_visit_reason
         FROM patients p
-        LEFT JOIN (
-            SELECT a1.aadhaar, a1.appointment_date, a1.department
-            FROM appointments a1
-            WHERE a1.appointment_id = (
-                SELECT a2.appointment_id 
-                FROM appointments a2 
-                WHERE a2.aadhaar = a1.aadhaar 
-                ORDER BY a2.appointment_date DESC, a2.appointment_id DESC 
-                LIMIT 1
-            )
-        ) a ON p.aadhaar = a.aadhaar
-        ORDER BY p.name ASC
+        LEFT JOIN patient_history h ON p.aadhaar = h.aadhaar
+        ORDER BY h.visit_date DESC, h.history_id DESC, p.name ASC
     """)
     patients_list = cur.fetchall()
     cur.close()
