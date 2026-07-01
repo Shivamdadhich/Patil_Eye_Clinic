@@ -259,7 +259,12 @@ def forgot_password_complete():
     session.pop("reset_email", None)
 
     flash("Password reset successfully. You can now login with your new password.", "success")
-    return redirect(url_for("receptionist_login"))
+    if role == "doctors":
+        return redirect(url_for("doctor_login"))
+    elif role == "lab_staff":
+        return redirect(url_for("lab_login"))
+    else:
+        return redirect(url_for("receptionist_login"))
 
 @app.route("/receptionist/dashboard")
 def receptionist_dashboard():
