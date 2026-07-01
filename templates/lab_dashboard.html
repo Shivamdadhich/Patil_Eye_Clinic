@@ -128,7 +128,7 @@
                 <div class="main-card shadow-sm">
                     <h5 class="mb-3">Search Patient</h5>
                     <form method="POST" action="{{ url_for('lab_dashboard') }}" class="d-flex gap-2">
-                        <input type="text" name="aadhaar" id="mainAadhaarInput" class="form-control glass-input" placeholder="Enter Aadhaar Number" required value="{{ aadhaar or '' }}">
+                        <input type="text" name="aadhaar" id="mainAadhaarInput" class="form-control glass-input" placeholder="e.g. SHIVAM01012004" required value="{{ aadhaar or '' }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
                         <button type="submit" class="btn btn-action btn-primary px-4">Search</button>
                     </form>
                 </div>
