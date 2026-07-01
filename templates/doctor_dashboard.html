@@ -184,9 +184,9 @@
                                               <td>{{ h.diagnosis }}</td>
                                               <td>
                                                   {% if h.prescription_image_name %}
-                                                      <a href="{{ url_for('serve_prescription_image', history_id=h.history_id) }}" target="_blank" class="text-success fw-semibold text-decoration-none d-inline-flex align-items-center gap-1">
+                                                      <button type="button" class="btn btn-link text-success p-0 fw-semibold text-decoration-none d-inline-flex align-items-center gap-1" style="border: none; background: none; font-size: inherit;" onclick="viewReportModal('{{ url_for('serve_prescription_image', history_id=h.history_id) }}', 'Receipt: {{ h.prescription_image_name }}')">
                                                           📄 View Prescription
-                                                      </a>
+                                                      </button>
                                                   {% else %}
                                                       <span class="text-muted">No Receipt</span>
                                                   {% endif %}
@@ -456,8 +456,9 @@ function renderSelectedTests() {
                 <h5 class="modal-title" id="reportModalLabel">Report: <span id="modalReportTitle"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-0" style="height: 80vh;">
-                <iframe id="reportFrame" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+            <div class="modal-body p-0 d-flex align-items-center justify-content-center bg-dark" style="height: 80vh; overflow: hidden;">
+                <iframe id="reportFrame" src="" style="width: 100%; height: 100%; border: none; display: none;"></iframe>
+                <img id="reportImage" src="" style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;">
             </div>
         </div>
     </div>
@@ -495,6 +496,7 @@ document.addEventListener("DOMContentLoaded", function() {
     reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
     document.getElementById('reportModal').addEventListener('hidden.bs.modal', function () {
         document.getElementById('reportFrame').src = '';
+        document.getElementById('reportImage').src = '';
     });
     
     scannerModal = new bootstrap.Modal(document.getElementById('prescriptionScannerModal'));
@@ -507,7 +509,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function viewReportModal(url, reportType) {
     document.getElementById('modalReportTitle').innerText = reportType;
-    document.getElementById('reportFrame').src = url;
+    
+    const isImage = url.includes("serve_prescription_image") || url.includes("cloudinary") || url.match(/\.(jpeg|jpg|gif|png|webp)$/i);
+    const iframe = document.getElementById('reportFrame');
+    const img = document.getElementById('reportImage');
+    
+    if (isImage) {
+        iframe.style.display = 'none';
+        iframe.src = '';
+        img.src = url;
+        img.style.display = 'block';
+    } else {
+        img.style.display = 'none';
+        img.src = '';
+        iframe.src = url;
+        iframe.style.display = 'block';
+    }
+    
     reportModal.show();
 }
 
