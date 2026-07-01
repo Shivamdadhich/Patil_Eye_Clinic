@@ -2,7 +2,7 @@
 -- Use this script to initialize your MySQL / Cloud database tables.
 
 CREATE TABLE IF NOT EXISTS patients (
-    aadhaar VARCHAR(12) PRIMARY KEY,
+    aadhaar VARCHAR(30) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     age INT,
     gender VARCHAR(20),
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS lab_staff (
 
 CREATE TABLE IF NOT EXISTS appointments (
     appointment_id INT AUTO_INCREMENT PRIMARY KEY,
-    aadhaar VARCHAR(12) NOT NULL,
+    aadhaar VARCHAR(30) NOT NULL,
     department VARCHAR(100) NOT NULL,
     doctor VARCHAR(100) NOT NULL,
     appointment_date DATE NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS appointments (
 
 CREATE TABLE IF NOT EXISTS patient_history (
     history_id INT AUTO_INCREMENT PRIMARY KEY,
-    aadhaar VARCHAR(12) NOT NULL,
+    aadhaar VARCHAR(30) NOT NULL,
     visit_date DATE NOT NULL,
     diagnosis TEXT NOT NULL,
     prescription TEXT,
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS prescription_scan_sessions (
 
 CREATE TABLE IF NOT EXISTS lab_reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    aadhaar VARCHAR(12) NOT NULL,
+    aadhaar VARCHAR(30) NOT NULL,
     report_date DATE NOT NULL,
     report_type VARCHAR(100) NOT NULL,
     file_name VARCHAR(255) NOT NULL,
