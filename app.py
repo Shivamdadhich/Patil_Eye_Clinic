@@ -914,35 +914,18 @@ def save_history():
     if not follow_up_date:
         follow_up_date = None
     visit_date = get_ist_now().strftime("%Y-%m-%d")
-    # Process direct upload (for iPad/Tablets)
-    direct_file = request.files.get("direct_prescription")
-    direct_file_url = None
-    direct_file_name = None
-    if direct_file and direct_file.filename != "":
-        direct_file_name = direct_file.filename
-        file_bytes = direct_file.read()
-        compressed_bytes = compress_image_data(direct_file_name, file_bytes)
-        direct_file_url = upload_to_cloudinary(direct_file_name, compressed_bytes)
-
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     doctor_name = session.get("doctor_name")
     
     # Save base history entry
     cur.execute("""
         INSERT INTO patient_history (aadhaar, visit_date, diagnosis, prescription, advised_tests, doctor_name, prescription_image, prescription_image_name, remarks, follow_up_date)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """, (aadhaar, visit_date, diagnosis, prescription, tests, doctor_name, direct_file_url, direct_file_name, remarks, follow_up_date))
+        VALUES (%s, %s, %s, %s, %s, %s, NULL, NULL, %s, %s)
+    """, (aadhaar, visit_date, diagnosis, prescription, tests, doctor_name, remarks, follow_up_date))
     
     cur.execute("SELECT LAST_INSERT_ID() as new_id")
     insert_row = cur.fetchone()
     history_id = insert_row["new_id"] if insert_row else cur.lastrowid
-
-    # If direct file was uploaded, also store in the multi-table
-    if direct_file_url:
-        cur.execute("""
-            INSERT INTO patient_history_prescriptions (history_id, file_name, file_data)
-            VALUES (%s, %s, %s)
-        """, (history_id, direct_file_name, direct_file_url))
 
     if scan_token:
         # Retrieve all uploaded files in this session
