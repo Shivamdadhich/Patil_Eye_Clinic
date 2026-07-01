@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS doctors (
     password VARCHAR(100) NOT NULL,
     name VARCHAR(100) NOT NULL,
     specialization VARCHAR(100) NOT NULL,
-    contact VARCHAR(20) DEFAULT NULL
+    contact VARCHAR(20) DEFAULT NULL,
+    email VARCHAR(100) DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS lab_staff (
