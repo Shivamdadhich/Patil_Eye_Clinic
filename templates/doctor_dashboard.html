@@ -103,9 +103,9 @@
           <div class="col-lg-8">
               <!-- Search box -->
               <div class="main-card">
-                  <h5 class="mb-3 text-dark">Search Patient Aadhaar</h5>
+                  <h5 class="mb-3 text-dark">Search Patient UID</h5>
                   <form method="POST" class="d-flex gap-2">
-                      <input type="text" name="aadhaar" class="form-control glass-input" placeholder="Enter Aadhaar Card Number" required>
+                      <input type="text" name="aadhaar" class="form-control glass-input" placeholder="e.g. SHIVAM01012004" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
                       <button type="submit" class="btn btn-action btn-primary px-4">Search</button>
                   </form>
               </div>
