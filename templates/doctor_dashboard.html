@@ -128,7 +128,7 @@
                   <!-- Add Today's Data -->
                   <div class="main-card">
                       <h4 class="section-title">Add Diagnosis & Treatment</h4>
-                      <form method="POST" action="{{ url_for('save_history') }}" onsubmit="return validateDoctorForm(event)">
+                      <form method="POST" action="{{ url_for('save_history') }}" enctype="multipart/form-data" onsubmit="return validateDoctorForm(event)">
                           <input type="hidden" name="aadhaar" value="{{ patient.aadhaar }}">
                           <input type="hidden" name="scan_token" id="scan_token_input">
                           <div class="mb-3">
@@ -136,14 +136,21 @@
                               <textarea class="form-control glass-input" name="diagnosis" rows="2" placeholder="Describe symptoms, assessment, diagnosis details..." required></textarea>
                           </div>
                           
-                          <!-- Mobile QR scan widget -->
-                          <div class="mb-3 p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between flex-wrap gap-2">
-                              <div style="flex: 1; min-width: 250px;">
-                                  <label class="form-label mb-1">Prescription Receipt Upload (Via Mobile Scanner)</label>
-                                  <p class="text-muted small mb-0" id="scan_status_text">Click to generate a QR code, scan with your phone, and capture the receipt using your camera.</p>
-                              </div>
-                              <div>
-                                  <button type="button" class="btn btn-sm btn-outline-success px-3" onclick="openPrescriptionScanner()">📸 Scan Prescription Receipt</button>
+                          <!-- Mobile QR / Direct Upload widget -->
+                          <div class="mb-4 p-3 border rounded-3 bg-light">
+                              <label class="form-label mb-2 fw-semibold text-dark"><i class="bi bi-camera"></i> Prescription Receipt (Required)</label>
+                              <div class="row g-3 align-items-center">
+                                  <div class="col-md-6 border-md-end pe-md-3">
+                                      <label class="form-label small text-muted mb-1">Option A: Take Photo / Choose File (Direct upload for iPad/Tablets)</label>
+                                      <input type="file" name="direct_prescription" id="direct_prescription" class="form-control form-control-sm glass-input" accept="image/*" capture="environment" onchange="handleDirectFileChange()">
+                                  </div>
+                                  <div class="col-md-6 ps-md-3">
+                                      <label class="form-label small text-muted mb-1">Option B: Scan via QR Code (Mobile camera scanner)</label>
+                                      <div class="d-flex align-items-center justify-content-between gap-2">
+                                          <span class="text-muted small lh-sm" id="scan_status_text" style="font-size: 0.8rem;">No mobile upload tracked yet.</span>
+                                          <button type="button" class="btn btn-sm btn-outline-success px-3 text-nowrap" onclick="openPrescriptionScanner()"><i class="bi bi-qr-code-scan"></i> Scan via QR</button>
+                                      </div>
+                                  </div>
                               </div>
                           </div>
 
@@ -558,9 +565,22 @@ function openPrescriptionScanner() {
 
 let isPrescriptionUploaded = false;
 
+function handleDirectFileChange() {
+    const fileInput = document.getElementById("direct_prescription");
+    const scanText = document.getElementById("scan_status_text");
+    if (fileInput.files.length > 0) {
+        scanText.innerHTML = "📸 Direct image selected: " + fileInput.files[0].name;
+        scanText.style.color = "#10b981";
+    } else {
+        scanText.innerHTML = "No mobile upload tracked yet.";
+        scanText.style.color = "";
+    }
+}
+
 function validateDoctorForm(event) {
-    if (!isPrescriptionUploaded) {
-        alert("Mandatory Verification: Please upload the prescription receipt (via mobile scanner) before completing the session.");
+    const directFile = document.getElementById("direct_prescription").files.length > 0;
+    if (!isPrescriptionUploaded && !directFile) {
+        alert("Mandatory Verification: Please upload the prescription receipt (either capture directly using the file input or scan via QR code) before completing the session.");
         event.preventDefault();
         return false;
     }
