@@ -137,14 +137,14 @@
           <form method="POST" action="/receptionist/pharmacy-billing">
             <!-- Aadhaar Input -->
             <div class="mb-3">
-              <label for="aadhaar" class="form-label">Patient Aadhaar Number</label>
-              <input type="text" name="aadhaar" id="aadhaar" class="form-control glass-input" placeholder="e.g. 123456789012" minlength="12" maxlength="12" required value="{{ aadhaar or '' }}">
-            </div>
-
-            <!-- Patient Name Auto-display -->
-            <div class="mb-3">
-              <label class="form-label">Patient Registered Name</label>
-              <input type="text" id="patient_name_display" class="form-control glass-input" readonly style="background-color: #f3f4f6 !important; font-weight: 600;" value="Waiting for Aadhaar...">
+               <label for="aadhaar" class="form-label">Patient UID (Firstname + DDMMYYYY)</label>
+               <input type="text" name="aadhaar" id="aadhaar" class="form-control glass-input" placeholder="e.g. SHIVAM01012004" minlength="9" maxlength="28" required value="{{ aadhaar or '' }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
+             </div>
+ 
+             <!-- Patient Name Auto-display -->
+             <div class="mb-3">
+               <label class="form-label">Patient Registered Name</label>
+               <input type="text" id="patient_name_display" class="form-control glass-input" readonly style="background-color: #f3f4f6 !important; font-weight: 600;" value="Waiting for UID...">
             </div>
 
             <!-- Total Amount -->

@@ -36,7 +36,7 @@ mysql = get_connection(app)
 def normalize_aadhaar(aadhaar):
     if not aadhaar:
         return ""
-    return "".join(c for c in aadhaar if c.isdigit())[:12]
+    return "".join(c for c in aadhaar if c.isalnum()).upper()
 
 # -------------------- Image Compression Utility --------------------
 from PIL import Image

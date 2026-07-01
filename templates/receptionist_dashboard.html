@@ -112,8 +112,8 @@
           <h3 class="text-center mb-4 fw-bold text-dark">Find or Register Patient</h3>
           <form method="POST" action="/receptionist/search">
             <div class="mb-4">
-              <label for="aadhaar" class="form-label">Aadhaar Card Number (12 Digits)</label>
-              <input type="text" name="aadhaar" class="form-control glass-input" required placeholder="Enter Aadhaar Number" maxlength="12" pattern="\d{12}">
+              <label for="aadhaar" class="form-label">Patient UID (Firstname + DDMMYYYY)</label>
+              <input type="text" name="aadhaar" class="form-control glass-input" required placeholder="e.g. SHIVAM01012004" minlength="9" maxlength="28" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
             </div>
             <button type="submit" class="btn btn-action btn-primary w-100">Verify & Continue ➔</button>
           </form>
