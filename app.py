@@ -1437,28 +1437,9 @@ def view_schedule():
     cur.close()
     return render_template("doctor_schedule.html", doctors=doctors)
 
-@app.route("/labreport", methods=["POST"])
+@app.route("/labreport", methods=["GET", "POST"])
 def view_patient_reports():
-    aadhaar = request.form.get("aadhar")
-    patient = None
-    reports = []
-
-    if aadhaar:
-        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cur.execute("SELECT name, aadhaar FROM patients WHERE aadhaar = %s", (aadhaar,))
-        patient = cur.fetchone()
-        
-        if patient:
-            cur.execute("""
-                SELECT id, report_date, report_type 
-                FROM lab_reports WHERE aadhaar = %s 
-                ORDER BY report_date DESC, id DESC
-            """, (aadhaar,))
-            reports = cur.fetchall()
-            
-        cur.close()
-
-    return render_template("patient_reports.html", patient=patient, reports=reports)
+    return render_template("patient_portal_maintenance.html")
 
 # -------------------- Prescription Mobile Scan Features --------------------
 import uuid
