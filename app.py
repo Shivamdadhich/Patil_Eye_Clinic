@@ -1,3 +1,4 @@
+# Git Config: Verified Shivam's email
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash, jsonify
 from db import get_connection
 from datetime import date, datetime, timedelta
