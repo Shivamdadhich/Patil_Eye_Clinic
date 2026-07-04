@@ -274,10 +274,10 @@ def receptionist_dashboard():
     today_str = get_ist_now().date().isoformat()
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.execute("""
-        SELECT a.appointment_id, p.name as patient_name, a.aadhaar as uid, a.doctor, a.department, a.time_slot, a.payment_status
+        SELECT a.appointment_id, p.name as patient_name, a.aadhaar as uid, a.doctor, a.department, a.time_slot, a.payment_status, a.status
         FROM appointments a
         JOIN patients p ON a.aadhaar = p.aadhaar
-        WHERE a.appointment_date = %s
+        WHERE a.appointment_date = %s AND a.payment_status = 'Paid'
         ORDER BY a.doctor, a.appointment_id ASC
     """, (today_str,))
     queue = cur.fetchall()
@@ -348,6 +348,28 @@ def api_collect_payment():
     mysql.connection.commit()
     cursor.close()
     return jsonify({"status": "success"})
+
+@app.route("/receptionist/api/toggle-appointment-status", methods=["POST"])
+def api_toggle_appointment_status():
+    if not session.get("receptionist_logged_in"):
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    
+    appointment_id = request.form.get("appointment_id")
+    new_status = request.form.get("status")
+    
+    if not appointment_id or new_status not in ["Waiting", "Completed"]:
+        return jsonify({"status": "error", "message": "Invalid request parameters"}), 400
+        
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+        UPDATE appointments 
+        SET status = %s 
+        WHERE appointment_id = %s
+    """, (new_status, appointment_id))
+    mysql.connection.commit()
+    cursor.close()
+    
+    return jsonify({"status": "success", "new_status": new_status})
 
 @app.route("/receptionist/online-bookings/collect", methods=["POST"])
 def receptionist_online_bookings_collect():
