@@ -1951,11 +1951,11 @@ def admin_patients_records():
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.execute("""
         SELECT p.aadhaar, p.name, p.age, p.address, p.gender, 
-               h.visit_date as last_visit_date, 
-               h.diagnosis as last_visit_reason
+               COALESCE(h.visit_date, (SELECT MAX(appointment_date) FROM appointments WHERE aadhaar = p.aadhaar)) as last_visit_date, 
+               COALESCE(h.diagnosis, (SELECT CONCAT('Appointment (', department, ')') FROM appointments WHERE aadhaar = p.aadhaar ORDER BY appointment_date DESC LIMIT 1), 'Registered') as last_visit_reason
         FROM patients p
         LEFT JOIN patient_history h ON p.aadhaar = h.aadhaar
-        ORDER BY h.visit_date DESC, h.history_id DESC, p.name ASC
+        ORDER BY COALESCE(h.visit_date, (SELECT MAX(appointment_date) FROM appointments WHERE aadhaar = p.aadhaar)) DESC, h.history_id DESC, p.name ASC
     """)
     patients_list = cur.fetchall()
     cur.close()
