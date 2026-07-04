@@ -270,7 +270,26 @@ def forgot_password_complete():
 def receptionist_dashboard():
     if not session.get("receptionist_logged_in"):
         return redirect(url_for("receptionist_login"))
-    return render_template("receptionist_dashboard.html")
+    
+    today_str = get_ist_now().date().isoformat()
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute("""
+        SELECT a.appointment_id, p.name as patient_name, a.aadhaar as uid, a.doctor, a.department, a.time_slot, a.payment_status
+        FROM appointments a
+        JOIN patients p ON a.aadhaar = p.aadhaar
+        WHERE a.appointment_date = %s
+        ORDER BY a.doctor, a.appointment_id ASC
+    """, (today_str,))
+    queue = cur.fetchall()
+    cur.close()
+    
+    # Group by doctor for clean queue view
+    from collections import defaultdict
+    grouped_queue = defaultdict(list)
+    for appt in queue:
+        grouped_queue[appt['doctor']].append(appt)
+    
+    return render_template("receptionist_dashboard.html", grouped_queue=dict(grouped_queue))
 
 @app.route("/receptionist/logout")
 def receptionist_logout():
