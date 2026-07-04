@@ -120,7 +120,7 @@
                           </div>
                           <div class="text-end">
                               <div class="text-muted small">Demographics</div>
-                              <strong>{{ patient.age }} Years / {{ patient.gender }}</strong>
+                              <strong>{% if 'Months' in patient.age %}{{ patient.age }}{% else %}{{ patient.age }} Years{% endif %} / {{ patient.gender }}</strong>
                           </div>
                       </div>
                   </div>

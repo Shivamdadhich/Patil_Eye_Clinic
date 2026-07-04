@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS patients (
     aadhaar VARCHAR(30) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    age INT,
+    age VARCHAR(30),
     gender VARCHAR(20),
     contact VARCHAR(20),
     address TEXT

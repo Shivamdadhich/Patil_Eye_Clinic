@@ -159,7 +159,7 @@
                                 <tr class="patient-row">
                                     <td class="fw-bold text-secondary" style="font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;">{{ p.aadhaar }}</td>
                                     <td class="fw-bold text-dark">{{ p.name }}</td>
-                                    <td>{{ p.age }} Yrs</td>
+                                    <td>{% if 'Months' in p.age %}{{ p.age }}{% else %}{{ p.age }} Yrs{% endif %}</td>
                                     <td>
                                         {% if p.gender|lower == 'male' %}
                                             <span class="badge badge-gender gender-male">Male</span>

@@ -469,7 +469,14 @@ def register_patient():
         age = None
         if birth_date:
             birth_date_obj = datetime.strptime(birth_date, '%Y-%m-%d')
-            age = (datetime.today() - birth_date_obj).days // 365
+            diff_days = (datetime.today() - birth_date_obj).days
+            if diff_days < 365:
+                months = round(diff_days / 30.4375)
+                if months <= 0:
+                    months = 1
+                age = f"{months} Months"
+            else:
+                age = str(diff_days // 365)
 
         # Check if patient already exists to avoid primary key duplicates (IntegrityError)
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -675,7 +682,14 @@ def patient_book_register():
         age = None
         if birth_date:
             birth_date_obj = datetime.strptime(birth_date, '%Y-%m-%d')
-            age = (datetime.today() - birth_date_obj).days // 365
+            diff_days = (datetime.today() - birth_date_obj).days
+            if diff_days < 365:
+                months = round(diff_days / 30.4375)
+                if months <= 0:
+                    months = 1
+                age = f"{months} Months"
+            else:
+                age = str(diff_days // 365)
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute("SELECT name FROM patients WHERE aadhaar = %s", (aadhaar,))

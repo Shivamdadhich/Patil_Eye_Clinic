@@ -256,7 +256,7 @@
                             </div>
                             <div class="text-end">
                                 <div class="text-muted small">Age / Sex</div>
-                                <strong class="text-dark">{{ patient.age }} Years &bull; {{ patient.gender }}</strong>
+                                <strong class="text-dark">{% if 'Months' in patient.age %}{{ patient.age }}{% else %}{{ patient.age }} Years{% endif %} &bull; {{ patient.gender }}</strong>
                             </div>
                         </div>
                     </div>

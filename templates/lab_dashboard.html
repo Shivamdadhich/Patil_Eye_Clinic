@@ -148,7 +148,7 @@
                             </div>
                             <div class="col-md-3 col-sm-6 mb-2">
                                 <small class="text-muted d-block">Age</small>
-                                <strong>{{ patient.age }} yrs</strong>
+                                <strong>{% if 'Months' in patient.age %}{{ patient.age }}{% else %}{{ patient.age }} yrs{% endif %}</strong>
                             </div>
                             <div class="col-md-3 col-sm-6 mb-2">
                                 <small class="text-muted d-block">Gender</small>
