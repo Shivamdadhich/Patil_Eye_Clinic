@@ -1054,6 +1054,14 @@ def save_history():
             # Clear temporary session
             cur.execute("DELETE FROM prescription_scan_sessions WHERE token = %s", (scan_token,))
 
+    # Automatically mark today's appointment for this patient as 'Completed'
+    today_str = get_ist_now().date().isoformat()
+    cur.execute("""
+        UPDATE appointments 
+        SET status = 'Completed'
+        WHERE aadhaar = %s AND appointment_date = %s
+    """, (aadhaar, today_str))
+
     mysql.connection.commit()
     cur.close()
 
