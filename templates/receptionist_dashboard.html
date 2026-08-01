@@ -127,13 +127,26 @@
   <div class="d-flex w-100" style="min-height: calc(100vh - 76px); overflow: hidden; margin-top: -24px;">
     <!-- Left Workspace -->
     <div id="mainWorkspace" class="flex-grow-1 p-4" style="transition: all 0.3s ease;">
-      <div class="d-flex justify-content-start mb-2 gap-2" style="max-width: 480px; margin: 0 auto;">
-        <a href="/receptionist/online-bookings" class="btn btn-success shadow-sm px-4 py-2" style="border-radius: 12px; font-weight: 600; background-color: #10b981; border-color: #10b981; color: #ffffff; text-decoration: none;">
-           Online Bookings
-        </a>
-        <a href="/receptionist/billing" class="btn btn-outline-success shadow-sm px-4 py-2" style="border-radius: 12px; font-weight: 600; text-decoration: none; border-color: #10b981; color: #047857;">
-           Billing Desk
-        </a>
+      <!-- Sleek Dashboard Quick Navigation Row -->
+      <div class="row g-2 justify-content-center mb-3" style="max-width: 520px; margin: 0 auto;">
+        <div class="col-4">
+          <a href="/receptionist/online-bookings" class="d-flex flex-column align-items-center justify-content-center p-2 text-decoration-none bg-white border rounded-3 shadow-sm" style="transition: all 0.2s ease; border-color: rgba(16, 185, 129, 0.2) !important;">
+             <i class="bi bi-calendar2-range text-success fs-4 mb-1"></i>
+             <span class="fw-bold text-dark" style="font-size: 0.78rem;">Online Bookings</span>
+          </a>
+        </div>
+        <div class="col-4">
+          <a href="/receptionist/billing" class="d-flex flex-column align-items-center justify-content-center p-2 text-decoration-none bg-white border rounded-3 shadow-sm" style="transition: all 0.2s ease; border-color: rgba(16, 185, 129, 0.2) !important;">
+             <i class="bi bi-receipt text-success fs-4 mb-1"></i>
+             <span class="fw-bold text-dark" style="font-size: 0.78rem;">Billing Desk</span>
+          </a>
+        </div>
+        <div class="col-4">
+          <a href="/receptionist/follow-ups" class="d-flex flex-column align-items-center justify-content-center p-2 text-decoration-none bg-white border rounded-3 shadow-sm" style="transition: all 0.2s ease; border-color: rgba(16, 185, 129, 0.2) !important;">
+             <i class="bi bi-calendar-check text-success fs-4 mb-1"></i>
+             <span class="fw-bold text-dark" style="font-size: 0.78rem;">View Follow-ups</span>
+          </a>
+        </div>
       </div>
       <div class="row justify-content-center mt-3">
         <div class="col-md-8 col-lg-6 mb-4">

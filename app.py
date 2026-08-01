@@ -577,6 +577,37 @@ def make_appointment():
                            min_date=min_date, 
                            doctors_by_dept=doctors_by_dept)
 
+# -------------------- Patient Follow-ups --------------------
+@app.route("/receptionist/follow-ups")
+def receptionist_follow_ups():
+    if not session.get("receptionist_logged_in"):
+        return redirect(url_for("receptionist_login"))
+        
+    selected_date = request.args.get("date")
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    if selected_date:
+        cur.execute("""
+            SELECT ph.history_id, ph.aadhaar, ph.visit_date, ph.follow_up_date, ph.diagnosis, ph.doctor_name, p.name as patient_name, p.contact 
+            FROM patient_history ph
+            JOIN patients p ON ph.aadhaar = p.aadhaar
+            WHERE ph.follow_up_date = %s
+            ORDER BY p.name ASC
+        """, (selected_date,))
+    else:
+        cur.execute("""
+            SELECT ph.history_id, ph.aadhaar, ph.visit_date, ph.follow_up_date, ph.diagnosis, ph.doctor_name, p.name as patient_name, p.contact 
+            FROM patient_history ph
+            JOIN patients p ON ph.aadhaar = p.aadhaar
+            WHERE ph.follow_up_date IS NOT NULL AND ph.follow_up_date >= CURDATE()
+            ORDER BY ph.follow_up_date ASC, p.name ASC
+        """)
+        
+    follow_ups = cur.fetchall()
+    cur.close()
+    
+    return render_template("follow_ups.html", follow_ups=follow_ups, selected_date=selected_date)
+
 # -------------------- Billing & Inventory Desk --------------------
 @app.route("/receptionist/billing", methods=["GET", "POST"])
 def receptionist_billing():
