@@ -522,14 +522,8 @@ def make_appointment():
         if not appointment_date:
             appointment_date = get_ist_now().date().isoformat()
 
-        # Robust amount parsing
-        amount = request.form.get("amount", "400.00")
-        try:
-            amount_val = float(amount)
-        except (TypeError, ValueError):
-            amount_val = 400.00
-
-        payment_method = request.form.get("payment_method", "Cash")
+        amount_val = 0.00
+        payment_method = "Free"
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute("SELECT name, age, gender FROM patients WHERE aadhaar = %s", (aadhaar,))
@@ -583,47 +577,172 @@ def make_appointment():
                            min_date=min_date, 
                            doctors_by_dept=doctors_by_dept)
 
-# -------------------- Pharmacy Billing --------------------
-@app.route("/receptionist/pharmacy-billing", methods=["GET", "POST"])
-def receptionist_pharmacy_billing():
+# -------------------- Billing & Inventory Desk --------------------
+@app.route("/receptionist/billing", methods=["GET", "POST"])
+def receptionist_billing():
     if not session.get("receptionist_logged_in"):
         return redirect(url_for("receptionist_login"))
         
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
     if request.method == "POST":
         aadhaar = normalize_aadhaar(request.form.get("aadhaar"))
-        amount = request.form.get("amount")
+        consultation_included = request.form.get("consultation_included")
+        consultation_amount = request.form.get("consultation_amount", "400.00")
         payment_method = request.form.get("payment_method", "UPI")
         
-        # Verify amount is valid
-        try:
-            amount_val = float(amount)
-        except (TypeError, ValueError):
-            flash("Invalid amount entered. Please try again.", "danger")
-            return redirect(url_for("receptionist_pharmacy_billing", aadhaar=aadhaar))
-            
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         # Verify patient exists
-        cursor.execute("SELECT name FROM patients WHERE aadhaar = %s", (aadhaar,))
-        patient = cursor.fetchone()
-        
+        cur.execute("SELECT name FROM patients WHERE aadhaar = %s", (aadhaar,))
+        patient = cur.fetchone()
         if not patient:
-            cursor.close()
-            flash("Patient not found in database! Please check the Aadhaar number.", "danger")
-            return redirect(url_for("receptionist_pharmacy_billing", aadhaar=aadhaar))
+            cur.close()
+            flash("Patient not found in database! Please check the UID.", "danger")
+            return redirect(url_for("receptionist_billing", aadhaar=aadhaar))
             
-        # Record pharmacy bill
-        cursor.execute("""
+        consultation_included_val = 1 if consultation_included else 0
+        try:
+            consultation_amount_val = float(consultation_amount) if consultation_included_val else 0.0
+        except ValueError:
+            consultation_amount_val = 0.0
+            
+        medicine_ids = request.form.getlist("medicine_ids[]")
+        medicine_quantities = request.form.getlist("medicine_quantities[]")
+        medicine_rates = request.form.getlist("medicine_rates[]")
+        
+        medicine_amount_val = 0.0
+        bill_items_to_save = []
+        
+        for idx in range(len(medicine_ids)):
+            try:
+                med_id = int(medicine_ids[idx])
+                qty = int(medicine_quantities[idx])
+                rate = float(medicine_rates[idx])
+                if qty <= 0:
+                    continue
+                subtotal = qty * rate
+                medicine_amount_val += subtotal
+                bill_items_to_save.append((med_id, qty, rate))
+            except (ValueError, IndexError):
+                continue
+                
+        net_total = medicine_amount_val + consultation_amount_val
+        
+        # Save into bills table
+        cur.execute("""
+            INSERT INTO bills (aadhaar, consultation_included, consultation_amount, medicine_amount, total_amount, payment_method)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (aadhaar, consultation_included_val, consultation_amount_val, medicine_amount_val, net_total, payment_method))
+        
+        bill_id = cur.lastrowid
+        
+        # Save bill items and deduct stock
+        for med_id, qty, rate in bill_items_to_save:
+            cur.execute("""
+                INSERT INTO bill_items (bill_id, medicine_id, quantity, rate)
+                VALUES (%s, %s, %s, %s)
+            """, (bill_id, med_id, qty, rate))
+            
+            cur.execute("""
+                UPDATE inventory 
+                SET quantity = GREATEST(0, quantity - %s)
+                WHERE medicine_id = %s
+            """, (qty, med_id))
+            
+        # Legacy backup for accounts/admin report
+        cur.execute("""
             INSERT INTO pharmacy_bills (aadhaar, amount, payment_method)
             VALUES (%s, %s, %s)
-        """, (aadhaar, amount_val, payment_method))
-        mysql.connection.commit()
-        cursor.close()
+        """, (aadhaar, net_total, payment_method))
         
-        flash(f"Pharmacy bill of ₹{amount_val:.2f} successfully recorded for {patient['name']}!", "success")
+        mysql.connection.commit()
+        cur.close()
+        
+        flash(f"Final bill of ₹{net_total:.2f} successfully saved for {patient['name']}!", "success")
         return redirect(url_for("receptionist_dashboard"))
         
+    # GET request
     aadhaar = normalize_aadhaar(request.args.get("aadhaar"))
-    return render_template("pharmacy_billing.html", aadhaar=aadhaar)
+    cur.execute("SELECT * FROM inventory ORDER BY name ASC")
+    medicines = cur.fetchall()
+    cur.close()
+    return render_template("billing.html", aadhaar=aadhaar, medicines=medicines)
+
+@app.route("/receptionist/inventory")
+def receptionist_inventory():
+    if not session.get("receptionist_logged_in"):
+        return redirect(url_for("receptionist_login"))
+        
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute("SELECT * FROM inventory ORDER BY name ASC")
+    medicines = cur.fetchall()
+    cur.close()
+    return render_template("inventory.html", medicines=medicines)
+
+@app.route("/receptionist/inventory/add", methods=["POST"])
+def add_inventory_item():
+    if not session.get("receptionist_logged_in"):
+        return redirect(url_for("receptionist_login"))
+        
+    name = request.form.get("name")
+    rate = request.form.get("rate", "0.00")
+    quantity = request.form.get("quantity", "0")
+    
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute("""
+            INSERT INTO inventory (name, rate, quantity)
+            VALUES (%s, %s, %s)
+        """, (name, float(rate), int(quantity)))
+        mysql.connection.commit()
+        flash(f"Medicine '{name}' successfully added to inventory!", "success")
+    except Exception as e:
+        flash(f"Error adding medicine: {str(e)}", "danger")
+    finally:
+        cur.close()
+        
+    return redirect(url_for("receptionist_inventory"))
+
+@app.route("/receptionist/inventory/edit", methods=["POST"])
+def edit_inventory_item():
+    if not session.get("receptionist_logged_in"):
+        return redirect(url_for("receptionist_login"))
+        
+    medicine_id = request.form.get("medicine_id")
+    rate = request.form.get("rate", "0.00")
+    quantity = request.form.get("quantity", "0")
+    
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute("""
+            UPDATE inventory 
+            SET rate = %s, quantity = %s
+            WHERE medicine_id = %s
+        """, (float(rate), int(quantity), int(medicine_id)))
+        mysql.connection.commit()
+        flash("Inventory item updated successfully!", "success")
+    except Exception as e:
+        flash(f"Error updating medicine: {str(e)}", "danger")
+    finally:
+        cur.close()
+        
+    return redirect(url_for("receptionist_inventory"))
+
+@app.route("/receptionist/inventory/delete/<int:medicine_id>")
+def delete_inventory_item(medicine_id):
+    if not session.get("receptionist_logged_in"):
+        return redirect(url_for("receptionist_login"))
+        
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute("DELETE FROM inventory WHERE medicine_id = %s", (medicine_id,))
+        mysql.connection.commit()
+        flash("Medicine removed from inventory successfully.", "success")
+    except Exception as e:
+        flash(f"Error deleting medicine: {str(e)}", "danger")
+    finally:
+        cur.close()
+        
+    return redirect(url_for("receptionist_inventory"))
 
 # -------------------- Public Patient Booking Flow --------------------
 @app.route("/book-appointment", methods=["GET", "POST"])
@@ -734,8 +853,8 @@ def patient_book_details():
         if not appointment_date:
             appointment_date = get_ist_now().date().isoformat()
 
-        amount_val = 400.00
-        payment_method = "Cash"
+        amount_val = 0.00
+        payment_method = "Free"
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute("SELECT name, age, gender FROM patients WHERE aadhaar = %s", (aadhaar,))
@@ -746,7 +865,7 @@ def patient_book_details():
 
         cursor.execute("""
             INSERT INTO appointments (aadhaar, department, doctor, appointment_date, amount, payment_method, time_slot, payment_status)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, 'Pending')
+            VALUES (%s, %s, %s, %s, %s, %s, %s, 'Paid')
         """, (aadhaar, department, doctor, appointment_date, amount_val, payment_method, time_slot))
         mysql.connection.commit()
         cursor.close()

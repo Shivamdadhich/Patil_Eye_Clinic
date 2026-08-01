@@ -106,7 +106,7 @@
           <div class="text-center mb-3">
              <span class="info-badge">✦ Patient Found</span>
              <div>
-               <a href="/receptionist/pharmacy-billing?aadhaar={{ aadhaar }}" class="btn btn-outline-success btn-sm px-3 rounded-pill fw-semibold" style="font-size: 0.8rem; text-decoration: none; border-color: #10b981; color: #047857;">➔ Record Pharmacy Bill</a>
+                <a href="/receptionist/billing?aadhaar={{ aadhaar }}" class="btn btn-outline-success btn-sm px-3 rounded-pill fw-semibold" style="font-size: 0.8rem; text-decoration: none; border-color: #10b981; color: #047857;">➔ Go to Billing Desk</a>
              </div>
           </div>
           <h3 class="text-center mb-4 fw-bold text-dark">Book Appointment</h3>
@@ -139,21 +139,9 @@
               <input type="date" name="date" class="form-control glass-input" required min="{{ min_date }}">
             </div>
 
-            <!-- Fee & Payment Mode -->
-            <div class="row g-2 mb-4">
-              <div class="col-6">
-                <label class="form-label">Consultation Fee (₹)</label>
-                <input type="number" name="amount" class="form-control glass-input" value="400" min="0" step="50" required>
-              </div>
-              <div class="col-6">
-                <label class="form-label">Payment Mode</label>
-                <select class="form-select glass-select" name="payment_method" required>
-                  <option value="Cash">Cash</option>
-                  <option value="UPI" selected>UPI</option>
-                  <option value="Card">Card</option>
-                </select>
-              </div>
-            </div>
+            <!-- No consultation fee at booking time -->
+            <input type="hidden" name="amount" value="0">
+            <input type="hidden" name="payment_method" value="Free">
 
             <button type="submit" class="btn btn-action btn-success w-100 mb-3">Confirm Appointment Booking ➔</button>
             <div class="text-center">
