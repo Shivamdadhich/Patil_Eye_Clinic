@@ -43,7 +43,7 @@ def normalize_aadhaar(aadhaar):
 from PIL import Image
 import io
 
-def compress_image_data(file_name, file_data, max_dim=1200, quality=60):
+def compress_image_data(file_name, file_data, max_dim=2500, quality=90):
     ext = file_name.lower().split('.')[-1]
     if ext not in ['jpg', 'jpeg', 'png']:
         return file_data
@@ -879,7 +879,7 @@ def doctor_login():
 # -------------------- Doctor Dashboard --------------------
 @app.route("/doctor/dashboard", methods=["GET", "POST"])
 def doctor_dashboard():
-    if not session.get("doctor_logged_in"):
+    if not session.get("doctor_logged_in") and not session.get("receptionist_logged_in"):
         return redirect(url_for("doctor_login"))
 
     patient = None
@@ -896,6 +896,8 @@ def doctor_dashboard():
         # Recent patient panel
         elif "selected_aadhaar" in request.form:
             aadhaar = request.form.get("selected_aadhaar")
+    else:
+        aadhaar = request.args.get("aadhaar")
 
     if aadhaar:
         cur.execute("SELECT name, aadhaar, age, gender FROM patients WHERE aadhaar = %s", (aadhaar,))
@@ -940,16 +942,18 @@ def doctor_dashboard():
 
     # Fetch doctor's assigned patients (recent 20) from appointments (Only showing paid visits)
     doctor_name = session.get("doctor_name")
-    cur.execute("""
-        SELECT p.name, p.aadhaar
-        FROM appointments a
-        JOIN patients p ON a.aadhaar = p.aadhaar
-        WHERE a.doctor = %s AND a.payment_status = 'Paid'
-        GROUP BY p.name, p.aadhaar
-        ORDER BY MAX(a.appointment_date) DESC
-        LIMIT 20
-    """, (doctor_name,))
-    recent_patients = [{"name": rp[0], "aadhaar": rp[1]} for rp in cur.fetchall()]
+    recent_patients = []
+    if doctor_name:
+        cur.execute("""
+            SELECT p.name, p.aadhaar
+            FROM appointments a
+            JOIN patients p ON a.aadhaar = p.aadhaar
+            WHERE a.doctor = %s AND a.payment_status = 'Paid'
+            GROUP BY p.name, p.aadhaar
+            ORDER BY MAX(a.appointment_date) DESC
+            LIMIT 20
+        """, (doctor_name,))
+        recent_patients = [{"name": rp[0], "aadhaar": rp[1]} for rp in cur.fetchall()]
 
     cur.close()
 
@@ -962,7 +966,7 @@ def doctor_dashboard():
 # -------------------- Save Today's Data --------------------
 @app.route("/doctor/save_history", methods=["POST"])
 def save_history():
-    if not session.get("doctor_logged_in"):
+    if not session.get("doctor_logged_in") and not session.get("receptionist_logged_in"):
         return redirect(url_for("doctor_login"))
 
     aadhaar = request.form.get("aadhaar")
@@ -976,7 +980,16 @@ def save_history():
         follow_up_date = None
     visit_date = get_ist_now().strftime("%Y-%m-%d")
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
     doctor_name = session.get("doctor_name")
+    if not doctor_name and session.get("receptionist_logged_in"):
+        today_str = get_ist_now().date().isoformat()
+        cur.execute("SELECT doctor FROM appointments WHERE aadhaar = %s AND appointment_date = %s LIMIT 1", (aadhaar, today_str))
+        appt = cur.fetchone()
+        if appt:
+            doctor_name = appt["doctor"]
+        else:
+            doctor_name = "Clinic Doctor"
     
     # Save base history entry
     cur.execute("""
@@ -987,6 +1000,35 @@ def save_history():
     cur.execute("SELECT LAST_INSERT_ID() as new_id")
     insert_row = cur.fetchone()
     history_id = insert_row["new_id"] if insert_row else cur.lastrowid
+
+    # Handle direct multipart file uploads
+    uploaded_files = request.files.getlist("prescription_images")
+    if uploaded_files and not all(f.filename == "" for f in uploaded_files):
+        first_file_name = None
+        first_file_url = None
+        
+        for file in uploaded_files:
+            if file.filename != "":
+                file_bytes = file.read()
+                compressed_bytes = compress_image_data(file.filename, file_bytes)
+                cloudinary_url = upload_to_cloudinary(file.filename, compressed_bytes, folder="prescriptions")
+                
+                if cloudinary_url:
+                    if not first_file_url:
+                        first_file_name = file.filename
+                        first_file_url = cloudinary_url
+                    
+                    cur.execute("""
+                        INSERT INTO patient_history_prescriptions (history_id, file_name, file_data)
+                        VALUES (%s, %s, %s)
+                    """, (history_id, file.filename, cloudinary_url))
+        
+        if first_file_url:
+            cur.execute("""
+                UPDATE patient_history 
+                SET prescription_image = %s, prescription_image_name = %s
+                WHERE history_id = %s
+            """, (first_file_url, first_file_name, history_id))
 
     if scan_token:
         # Retrieve all uploaded files in this session

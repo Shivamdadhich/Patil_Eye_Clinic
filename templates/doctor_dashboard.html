@@ -128,7 +128,7 @@
                   <!-- Add Today's Data -->
                   <div class="main-card">
                       <h4 class="section-title">Add Diagnosis & Treatment</h4>
-                      <form method="POST" action="{{ url_for('save_history') }}" onsubmit="return validateDoctorForm(event)">
+                      <form method="POST" action="{{ url_for('save_history') }}" enctype="multipart/form-data" onsubmit="return validateDoctorForm(event)">
                           <input type="hidden" name="aadhaar" value="{{ patient.aadhaar }}">
                           <input type="hidden" name="scan_token" id="scan_token_input">
                           <div class="mb-3">
@@ -136,15 +136,14 @@
                               <textarea class="form-control glass-input" name="diagnosis" rows="2" placeholder="Describe symptoms, assessment, diagnosis details..." required></textarea>
                           </div>
                           
-                          <!-- Mobile QR scan widget -->
-                          <div class="mb-3 p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between flex-wrap gap-2">
-                              <div style="flex: 1; min-width: 250px;">
-                                  <label class="form-label mb-1">Prescription Receipt Upload (Via Mobile Scanner)</label>
-                                  <p class="text-muted small mb-0" id="scan_status_text">Click to generate a QR code, scan with your phone, and capture the receipt using your camera.</p>
-                              </div>
-                              <div>
-                                  <button type="button" class="btn btn-sm btn-outline-success px-3" onclick="openPrescriptionScanner()">📸 Scan Prescription Receipt</button>
-                              </div>
+                          <!-- Direct prescription image upload widget (supports multiple images and camera capture) -->
+                          <div class="mb-3 p-3 border rounded-3 bg-light">
+                              <label class="form-label fw-bold text-success mb-1">📸 Upload Prescription Receipt(s)</label>
+                              <input type="file" name="prescription_images" id="prescription_images" class="form-control glass-input" accept="image/*" multiple required onchange="previewImages(this)">
+                              <small class="text-muted d-block mt-1">Directly select one or multiple prescription photos (or take photos using your mobile camera).</small>
+                              
+                              <!-- Image Preview Area -->
+                              <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mt-3" style="display: none;"></div>
                           </div>
 
                           <div class="row mb-4">
@@ -576,11 +575,40 @@ function openPrescriptionScanner() {
     });
 }
 
-let isPrescriptionUploaded = false;
+function previewImages(input) {
+    const container = document.getElementById("imagePreviewContainer");
+    container.innerHTML = "";
+    if (input.files && input.files.length > 0) {
+        container.style.display = "flex";
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgDiv = document.createElement("div");
+                imgDiv.className = "position-relative border rounded overflow-hidden";
+                imgDiv.style.width = "80px";
+                imgDiv.style.height = "80px";
+                imgDiv.style.backgroundColor = "#f0f0f0";
+                
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.width = "100%";
+                img.style.height = "100%";
+                img.style.objectFit = "cover";
+                
+                imgDiv.appendChild(img);
+                container.appendChild(imgDiv);
+            }
+            reader.readAsDataURL(file);
+        });
+    } else {
+        container.style.display = "none";
+    }
+}
 
 function validateDoctorForm(event) {
-    if (!isPrescriptionUploaded) {
-        alert("Mandatory Verification: Please upload the prescription receipt (via mobile scanner) before completing the session.");
+    const fileInput = document.getElementById("prescription_images");
+    if (!fileInput || fileInput.files.length === 0) {
+        alert("Mandatory Verification: Please select/capture at least one prescription image before completing the session.");
         event.preventDefault();
         return false;
     }

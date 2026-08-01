@@ -150,19 +150,23 @@
           </form>
         </div>
         
-        <!-- Compact Collapsible Queue below the main card -->
+        <!-- Toggle Button for Offcanvas Queue -->
         <div class="text-center mt-4">
-          <button class="btn btn-outline-success btn-sm px-4 py-2 rounded-pill shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#queueCollapse" aria-expanded="false" aria-controls="queueCollapse" style="font-weight: 600; border-color: #10b981; color: #047857;">
-            <i class="bi bi-list-task me-1"></i> View Today's Patient Queue
+          <button class="btn btn-success shadow-sm px-4 py-2 rounded-pill" type="button" data-bs-toggle="offcanvas" data-bs-target="#queueOffcanvas" aria-controls="queueOffcanvas" style="font-weight: 600; background-color: #10b981; border-color: #10b981;">
+            <i class="bi bi-list-task me-1"></i> Open Patient Queue Panel
           </button>
         </div>
 
-        <div class="collapse mt-3" id="queueCollapse">
-          <div class="dashboard-card shadow-sm" style="margin-top: 0px; padding: 25px; background: rgba(255, 255, 255, 0.95); border-radius: 16px;">
-            <div class="text-center">
-               <span class="info-badge" style="margin-bottom: 10px;">✦ Active Consultations Queue</span>
+        <!-- Right-side sliding Offcanvas panel -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="queueOffcanvas" aria-labelledby="queueOffcanvasLabel" style="width: 450px; background: rgba(255, 255, 255, 0.98); border-left: 1px solid rgba(16, 185, 129, 0.2); box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);">
+          <div class="offcanvas-header bg-success text-white">
+            <h5 class="offcanvas-title fw-bold" id="queueOffcanvasLabel"><i class="bi bi-people-fill me-2"></i> Today's Patient Queue</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <div class="text-center mb-3">
+               <span class="info-badge">✦ Active Consultations Queue</span>
             </div>
-            <h4 class="mb-3 fw-bold text-dark text-center" style="font-family: 'Outfit', sans-serif;">Today's Patient Queue</h4>
             
             {% if grouped_queue %}
               {% for doctor, appts in grouped_queue.items() %}
@@ -189,7 +193,11 @@
                             <td>
                               <input type="checkbox" class="queue-checkbox" onchange="toggleStatus('{{ appt.appointment_id }}', this)" {% if appt.status == 'Completed' %}checked{% endif %} style="width: 15px; height: 15px;">
                             </td>
-                            <td class="fw-semibold text-dark">{{ appt.patient_name }}</td>
+                            <td class="fw-semibold">
+                              <a href="/doctor/dashboard?aadhaar={{ appt.uid }}" class="text-success text-decoration-none hover-underline fw-bold" target="_blank">
+                                  {{ appt.patient_name }} <i class="bi bi-box-arrow-up-right small ms-1" style="font-size: 0.7rem;"></i>
+                              </a>
+                            </td>
                             <td><code style="color: #047857; font-size: 0.8rem;">{{ appt.uid }}</code></td>
                             <td class="text-muted">{{ appt.time_slot or 'Walk-in' }}</td>
                           </tr>
