@@ -689,7 +689,7 @@ def receptionist_billing():
         cur.close()
         
         flash(f"Final bill of ₹{net_total:.2f} successfully saved for {patient['name']}!", "success")
-        return redirect(url_for("receptionist_dashboard"))
+        return redirect(url_for("receptionist_billing_receipt", bill_id=bill_id))
         
     # GET request
     aadhaar = normalize_aadhaar(request.args.get("aadhaar"))
@@ -697,6 +697,35 @@ def receptionist_billing():
     medicines = cur.fetchall()
     cur.close()
     return render_template("billing.html", aadhaar=aadhaar, medicines=medicines)
+
+@app.route("/receptionist/billing/receipt/<int:bill_id>")
+def receptionist_billing_receipt(bill_id):
+    if not session.get("receptionist_logged_in"):
+        return redirect(url_for("receptionist_login"))
+        
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    cur.execute("SELECT * FROM bills WHERE bill_id = %s", (bill_id,))
+    bill = cur.fetchone()
+    
+    if not bill:
+        cur.close()
+        flash("Bill not found!", "danger")
+        return redirect(url_for("receptionist_dashboard"))
+        
+    cur.execute("SELECT * FROM patients WHERE aadhaar = %s", (bill["aadhaar"],))
+    patient = cur.fetchone()
+    
+    cur.execute("""
+        SELECT bi.*, i.name as medicine_name 
+        FROM bill_items bi
+        JOIN inventory i ON bi.medicine_id = i.medicine_id
+        WHERE bi.bill_id = %s
+    """, (bill_id,))
+    items = cur.fetchall()
+    
+    cur.close()
+    return render_template("billing_receipt.html", bill=bill, patient=patient, items=items)
 
 @app.route("/receptionist/inventory")
 def receptionist_inventory():

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing Receipt | Patil Eye Clinic</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  {% include 'theme_style.html' %}
+  <style>
+      body {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%) !important;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 40px 0;
+      }
+      .receipt-card {
+          background: #ffffff;
+          border: 1px solid rgba(16, 185, 129, 0.18);
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 20px 40px rgba(4, 120, 87, 0.08);
+          max-width: 650px;
+          width: 100%;
+      }
+      .clinic-header {
+          border-bottom: 2px solid #10b981;
+          padding-bottom: 20px;
+          margin-bottom: 25px;
+      }
+      .info-row {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 10px;
+          font-size: 0.95rem;
+      }
+      .info-label {
+          font-weight: 600;
+          color: #064e3b;
+      }
+      .info-value {
+          color: #4b5563;
+          font-weight: 500;
+      }
+      .divider {
+          border-top: 1.5px dashed #e2e8f0;
+          margin: 20px 0;
+      }
+      .table-success-light {
+          background-color: rgba(16, 185, 129, 0.05);
+      }
+      .btn-action {
+          border-radius: 12px;
+          padding: 12px 24px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+      }
+      .btn-success {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+          border: none !important;
+      }
+      .btn-success:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+      }
+      @media print {
+          body {
+              background: none !important;
+              padding: 0 !important;
+          }
+          .receipt-card {
+              border: none !important;
+              box-shadow: none !important;
+              padding: 0 !important;
+          }
+          .no-print {
+              display: none !important;
+          }
+      }
+  </style>
+</head>
+<body>
+  <div class="receipt-card">
+    
+    <!-- Clinic Details Header -->
+    <div class="clinic-header text-center">
+      <h3 class="fw-bold text-dark mb-1 font-outfit" style="color: #047857 !important;">Patil Eye Clinic</h3>
+      <p class="text-secondary small mb-0">12, Clinic Complex, Opp. Central Park, Pune</p>
+      <p class="text-secondary small mb-0">Contact: +91 98765 43210 | Email: contact@patileyeclinic.com</p>
+    </div>
+
+    <!-- Receipt Meta -->
+    <div class="row mb-4">
+      <div class="col-sm-6">
+        <div class="info-row">
+          <span class="info-label">Bill ID:</span>
+          <span class="info-value">#{{ bill.bill_id }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Patient UID:</span>
+          <span class="info-value"><code>{{ bill.aadhaar }}</code></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Patient Name:</span>
+          <span class="info-value">{{ patient.name }}</span>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="info-row">
+          <span class="info-label">Billing Date:</span>
+          <span class="info-value">{{ bill.bill_date.strftime('%d-%m-%Y %I:%M %p') if bill.bill_date else 'N/A' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Payment Method:</span>
+          <span class="info-value"><span class="badge bg-success-light text-success px-3">{{ bill.payment_method }}</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Itemization Table -->
+    <h5 class="fw-bold mb-3 font-outfit text-dark"><i class="bi bi-file-earmark-text me-1 text-success"></i> Invoice Details</h5>
+    <div class="table-responsive mb-4">
+      <table class="table align-middle">
+        <thead class="table-success-light">
+          <tr style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">
+            <th>Item / Medicine Description</th>
+            <th class="text-center" style="width: 15%;">Qty</th>
+            <th class="text-end" style="width: 22%;">Rate (₹)</th>
+            <th class="text-end" style="width: 25%;">Subtotal (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if bill.consultation_included %}
+            <tr style="font-size: 0.9rem;">
+              <td class="fw-semibold text-dark">Consultation & Examination Charges</td>
+              <td class="text-center">1</td>
+              <td class="text-end">₹{{ "%.2f"|format(bill.consultation_amount) }}</td>
+              <td class="text-end fw-semibold">₹{{ "%.2f"|format(bill.consultation_amount) }}</td>
+            </tr>
+          {% endif %}
+          
+          {% for item in items %}
+            <tr style="font-size: 0.9rem;">
+              <td>{{ item.medicine_name }}</td>
+              <td class="text-center">{{ item.quantity }}</td>
+              <td class="text-end">₹{{ "%.2f"|format(item.rate) }}</td>
+              <td class="text-end fw-semibold">₹{{ "%.2f"|format(item.quantity * item.rate) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Total Calculations -->
+    <div class="divider"></div>
+    <div class="d-flex flex-column align-items-end mb-4">
+      <div class="d-flex justify-content-between mb-2" style="width: 240px; font-size: 0.9rem;">
+        <span class="text-secondary fw-semibold">Medicine Charges:</span>
+        <span class="fw-semibold text-dark">₹{{ "%.2f"|format(bill.medicine_amount) }}</span>
+      </div>
+      {% if bill.consultation_included %}
+        <div class="d-flex justify-content-between mb-2" style="width: 240px; font-size: 0.9rem;">
+          <span class="text-secondary fw-semibold">Consultation Charges:</span>
+          <span class="fw-semibold text-dark">₹{{ "%.2f"|format(bill.consultation_amount) }}</span>
+        </div>
+      {% endif %}
+      <div class="d-flex justify-content-between pt-2 border-top" style="width: 240px;">
+        <span class="fw-bold text-dark fs-5">Grand Total:</span>
+        <span class="fw-bold text-success fs-5">₹{{ "%.2f"|format(bill.total_amount) }}</span>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="d-flex gap-3 justify-content-center mt-4 no-print">
+      <button onclick="window.print()" class="btn btn-action btn-outline-success px-4">
+         <i class="bi bi-printer me-1"></i> Print Invoice
+      </button>
+      <a href="{{ url_for('receptionist_dashboard') }}" class="btn btn-action btn-success px-4">
+         Return to Dashboard ➔
+      </a>
+    </div>
+
+  </div>
+</body>
+</html>
