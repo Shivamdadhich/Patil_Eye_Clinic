@@ -679,6 +679,29 @@ def receptionist_billing():
                 WHERE medicine_id = %s
             """, (qty, med_id))
             
+        # Retrieve follow_up_date and remarks if entered at billing desk
+        follow_up_date = request.form.get("follow_up_date")
+        remarks = request.form.get("remarks")
+        if not follow_up_date:
+            follow_up_date = None
+        if not remarks:
+            remarks = None
+            
+        # Update follow_up_date and remarks in patient_history for today's visit
+        today_str = get_ist_now().strftime("%Y-%m-%d")
+        cur.execute("""
+            SELECT history_id FROM patient_history 
+            WHERE aadhaar = %s AND visit_date = %s 
+            ORDER BY history_id DESC LIMIT 1
+        """, (aadhaar, today_str))
+        hist_row = cur.fetchone()
+        if hist_row:
+            cur.execute("""
+                UPDATE patient_history 
+                SET follow_up_date = %s, remarks = %s 
+                WHERE history_id = %s
+            """, (follow_up_date, remarks, hist_row["history_id"]))
+
         # Legacy backup for accounts/admin report
         cur.execute("""
             INSERT INTO pharmacy_bills (aadhaar, amount, payment_method)

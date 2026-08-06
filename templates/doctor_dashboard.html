@@ -128,7 +128,7 @@
                   <!-- Add Today's Data -->
                   <div class="main-card">
                       <h4 class="section-title">Add Diagnosis & Treatment</h4>
-                      <form method="POST" action="{{ url_for('save_history') }}" enctype="multipart/form-data" onsubmit="return submitDoctorForm(event)">
+                      <form method="POST" action="{{ url_for('save_history') }}" enctype="multipart/form-data" onsubmit="return validateDoctorForm(event)">
                           <input type="hidden" name="aadhaar" value="{{ patient.aadhaar }}">
                           <input type="hidden" name="scan_token" id="scan_token_input">
                           <div class="mb-3">
@@ -136,40 +136,15 @@
                               <textarea class="form-control glass-input" name="diagnosis" rows="2" placeholder="Describe symptoms, assessment, diagnosis details..." required></textarea>
                           </div>
                           
-                          <!-- Direct Camera Capture Widget -->
-                          <div class="mb-3 p-3 border rounded-3 bg-light text-center">
-                              <label class="form-label fw-bold text-success d-block mb-2">📸 Capture Prescription(s) / Receipt</label>
-                              
-                              <!-- Live Camera View Container -->
-                              <div id="cameraContainer" class="d-none mx-auto mb-3" style="max-width: 400px; position: relative;">
-                                  <video id="cameraVideo" class="w-100 border rounded-3" autoplay playsinline style="transform: scaleX(1);"></video>
-                                  <canvas id="cameraCanvas" class="d-none"></canvas>
-                                  <button type="button" class="btn btn-sm btn-danger position-absolute" onclick="stopCamera()" style="top: 10px; right: 10px; border-radius: 50%; width: 30px; height: 30px; line-height: 1;">✕</button>
-                              </div>
-                              
-                              <div class="d-flex justify-content-center gap-2 mb-3">
-                                  <button type="button" id="btnStartCamera" class="btn btn-outline-success px-3" onclick="startCamera()">🔌 Open Camera</button>
-                                  <button type="button" id="btnCapturePhoto" class="btn btn-success px-4 d-none" onclick="capturePhoto()">📸 Capture Page</button>
-                              </div>
-
-                              <small class="text-muted d-block mb-3">Open camera, place prescription under view, and capture. Supports multiple pages.</small>
-                              
-                              <!-- Captured Images Thumbnails -->
-                              <div id="capturedThumbnails" class="d-flex flex-wrap gap-2 justify-content-center"></div>
+                          <!-- Direct File Upload for EOD Prescription Upload -->
+                          <div class="mb-3 p-3 border rounded-3 bg-light">
+                              <label class="form-label fw-bold text-success mb-1">📸 Upload Prescription Receipt(s)</label>
+                              <input type="file" name="prescription_images" id="prescription_images" class="form-control glass-input" accept="image/*" multiple required>
+                              <small class="text-muted d-block mt-1">Directly select one or multiple prescription photos from your gallery/device.</small>
                           </div>
 
-                          <div class="row mb-4">
-                               <div class="col-md-6">
-                                   <label class="form-label">Follow-up Date</label>
-                                   <input type="date" name="follow_up_date" class="form-control glass-input">
-                               </div>
-                               <div class="col-md-6">
-                                   <label class="form-label">Remarks / Advice (if any)</label>
-                                   <input type="text" name="remarks" class="form-control glass-input" placeholder="Enter follow-up instructions or comments...">
-                               </div>
-                           </div>
-                           <button class="btn btn-action btn-success px-4">Save & Complete Session</button>
-                       </form>
+                          <button class="btn btn-action btn-success px-4 mt-2">Save & Complete Session</button>
+                      </form>
                    </div>
 
                   <!-- Patient History -->
@@ -587,155 +562,21 @@ function openPrescriptionScanner() {
     });
 }
 
-let cameraStream = null;
-let capturedFiles = []; // Stores captured image blobs
-
-async function startCamera() {
-    try {
-        const constraints = {
-            video: {
-                facingMode: "environment", // Force rear camera on mobile devices
-                width: { ideal: 1920 },
-                height: { ideal: 1080 }
-            },
-            audio: false
-        };
-        
-        cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-        const video = document.getElementById("cameraVideo");
-        video.srcObject = cameraStream;
-        
-        document.getElementById("cameraContainer").classList.remove("d-none");
-        document.getElementById("btnCapturePhoto").classList.remove("d-none");
-        document.getElementById("btnStartCamera").classList.add("d-none");
-    } catch (err) {
-        console.error("Back camera getUserMedia failed, trying default camera...", err);
-        try {
-            cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            const video = document.getElementById("cameraVideo");
-            video.srcObject = cameraStream;
-            
-            document.getElementById("cameraContainer").classList.remove("d-none");
-            document.getElementById("btnCapturePhoto").classList.remove("d-none");
-            document.getElementById("btnStartCamera").classList.add("d-none");
-        } catch (fallbackErr) {
-            console.error("Camera access failed:", fallbackErr);
-            alert("Failed to access camera. Please ensure camera permissions are granted.");
-        }
-    }
-}
-
-function stopCamera() {
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-        cameraStream = null;
-    }
-    document.getElementById("cameraContainer").classList.add("d-none");
-    document.getElementById("btnCapturePhoto").classList.add("d-none");
-    document.getElementById("btnStartCamera").classList.remove("d-none");
-}
-
-function capturePhoto() {
-    const video = document.getElementById("cameraVideo");
-    const canvas = document.getElementById("cameraCanvas");
-    
-    const width = video.videoWidth || 1920;
-    const height = video.videoHeight || 1080;
-    
-    canvas.width = width;
-    canvas.height = height;
-    
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, width, height);
-    
-    canvas.toBlob((blob) => {
-        if (blob) {
-            const fileIndex = capturedFiles.length;
-            capturedFiles.push(blob);
-            
-            const container = document.getElementById("capturedThumbnails");
-            const thumbDiv = document.createElement("div");
-            thumbDiv.className = "position-relative border rounded overflow-hidden";
-            thumbDiv.style.width = "90px";
-            thumbDiv.style.height = "90px";
-            thumbDiv.id = "thumb-" + fileIndex;
-            
-            const img = document.createElement("img");
-            img.src = URL.createObjectURL(blob);
-            img.style.width = "100%";
-            img.style.height = "100%";
-            img.style.objectFit = "cover";
-            
-            const deleteBtn = document.createElement("button");
-            deleteBtn.type = "button";
-            deleteBtn.className = "btn btn-danger btn-sm position-absolute";
-            deleteBtn.style.top = "2px";
-            deleteBtn.style.right = "2px";
-            deleteBtn.style.padding = "2px 6px";
-            deleteBtn.style.fontSize = "0.7rem";
-            deleteBtn.innerHTML = "✕";
-            deleteBtn.onclick = function() {
-                capturedFiles[fileIndex] = null; // Mark as deleted
-                thumbDiv.remove();
-            };
-            
-            thumbDiv.appendChild(img);
-            thumbDiv.appendChild(deleteBtn);
-            container.appendChild(thumbDiv);
-        }
-    }, "image/jpeg", 0.95); // High quality Jpeg image
-}
-
-async function submitDoctorForm(event) {
-    event.preventDefault();
-    
-    const activeBlobs = capturedFiles.filter(b => b !== null);
-    if (activeBlobs.length === 0) {
-        alert("Mandatory Verification: Please capture at least one prescription photo before completing the session.");
+function validateDoctorForm(event) {
+    const fileInput = document.getElementById("prescription_images");
+    if (!fileInput || fileInput.files.length === 0) {
+        alert("Mandatory: Please select at least one prescription image file to upload.");
+        event.preventDefault();
         return false;
     }
-    
+    // Show a loading text on submit button
     const form = event.target;
-    const formData = new FormData(form);
-    
-    // Append all captured page images as files
-    activeBlobs.forEach((blob, idx) => {
-        formData.append("prescription_images", blob, `prescription_page_${idx + 1}.jpg`);
-    });
-    
     const submitBtn = form.querySelector("button[type='submit']") || form.querySelector(".btn-success");
-    const origText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span>Uploading & Saving...`;
-    
-    try {
-        const response = await fetch(form.action, {
-            method: "POST",
-            body: formData
-        });
-        
-        if (response.redirected) {
-            stopCamera();
-            window.location.href = response.url;
-        } else {
-            const text = await response.text();
-            if (response.ok) {
-                stopCamera();
-                alert("Session completed and saved successfully!");
-                window.location.reload();
-            } else {
-                alert("Failed to save session. Server returned error: " + text);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = origText;
-            }
-        }
-    } catch (err) {
-        console.error("AJAX form submission failed:", err);
-        alert("A network error occurred. Please try again.");
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = origText;
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span>Uploading & Saving...`;
     }
-    return false;
+    return true;
 }
 </script>
 </body>
